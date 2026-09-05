@@ -23,3 +23,6 @@ data/cache/
 Thumbs.db
 .vscode/
 .idea/
+
+# runtime session state (interrupts, message history)
+data/sessions/

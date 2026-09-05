@@ -494,3 +494,74 @@ still wants temperature=0 plus a deterministic rate/fee pre-filter.
 version_diff node, draft node, the interrupt, the Cedar policy gate, and the
 verification node. The lineage and diff code exists and is verified; it is not
 yet a graph node.
+
+---
+
+# Day 5 — interrupt, approval, Cedar gate (Tier 1 item #4) — COMPLETE
+
+## Cedar is real, not a lookalike
+`cedarpy` runs the **actual Cedar engine** locally, so `policy/quorum.cedar` is
+evaluated by Cedar itself and is the same policy text intended for AgentCore
+Policy. Cedar is deny-by-default: an action with no matching permit is refused.
+
+All five branches verified:
+| Scenario | Decision |
+|---|---|
+| draft, no standing | **permitted** - drafting is safe and reversible |
+| submit, approved, **no standing** | **BLOCKED** - the demo beat |
+| submit, verified resident, all conditions | permitted |
+| submit, standing but an uncited claim | **BLOCKED** |
+| submit, approval 30h old (limit 24h) | **BLOCKED** |
+
+## Interrupts survive process death
+Verified across **two separate OS processes**: process 1 raised
+`tool_context.interrupt(...)` and exited; process 2 resumed the same session
+from `FileSessionManager` on disk and completed the tool call.
+That is §3's claim demonstrated - raised Tuesday, answered from a phone
+Thursday, agent resumes mid-graph.
+
+## Grounding check — deterministic, and it caught a real design error
+Verifying every claim is code, not a prompt. Three controls:
+| Input | Result |
+|---|---|
+| legitimate comment (3 quotes, cited) | passes |
+| uncited factual claim about the packet | **caught** |
+| fabricated quote not in the packet | **caught** |
+
+**The first version was wrong in a way that mattered.** It demanded a citation
+for every sentence, flagging "My household has no driveway" and "I urge the
+Council to..." as ungrounded. A gate that blocks every legitimate comment is
+worse than no gate - it trains the operator to override it. The rule is now:
+**cite what the packet says; you need not cite your own life or your own
+opinion.** A sentence needs a citation only if it quotes the packet or makes a
+factual claim about the document, and is not normative.
+
+Two defects found and fixed along the way:
+1. Sentence splitting broke on abbreviations, so "8 p.m." and "(packet p.3)"
+   manufactured uncited fragments out of properly cited sentences.
+2. A patching mistake wrote literal **backspace characters (0x08)** into eight
+   regexes in place of `\b`, so `PACKET_CLAIM` silently never matched. The
+   negative control caught it; without the control it would have shipped as a
+   gate that always passed.
+
+## End-to-end run, real packet, real item
+    ALERT      -> parking meter ordinance 8,012-N.S., item 1
+    DRAFT      -> Sonnet, 3 verbatim quotes, all cited (packet p.3)
+    GROUNDING  -> 3/3 quotes verified, 0 uncited  => all_claims_cited=True
+    INTERRUPT  -> "Approve filing this comment into the public record?"
+    APPROVED   -> resumed mid-tool
+    CEDAR      -> BLOCKED: no verified standing in this jurisdiction
+    OUTCOME    -> comment prepared, not filed
+
+The refusal now rests on **standing alone**, which is the clean version of the
+beat: the draft is fully grounded and a human approved it, and it is still
+refused - because the operator has no stake in Berkeley.
+
+## Tier 1 status
+1. ingest + segment            DONE
+2. stake match + citations     DONE
+3. lineage + version diff      DONE (centrepiece verified)
+4. interrupt -> policy -> act  DONE
+5. verification                HALF - vote/outcome extraction works; locating a
+                               filed comment inside a Supplemental Packet is not
+                               done yet.
