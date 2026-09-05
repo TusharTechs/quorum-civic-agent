@@ -435,3 +435,62 @@ because a reader skimming the response would think the request was granted.
 Two public PDFs, two months apart, 176 and 1,790 pages. A judge opens both,
 searches one sentence, and sees it in one and not the other. No mock, no API,
 no staged data.
+
+---
+
+# Day 4 — the Strands Graph (Tier 1 item #4, partial) — RUNS END TO END
+
+`src/quorum/pipeline.py`. The Graph **is** the coordinator; there is no
+supervisor agent layered on top of it (§3 is explicit that this reads as not
+understanding the framework).
+
+## Node design — a deliberate split
+| Node | Type | Why |
+|---|---|---|
+| watch, ingest, segment | `MultiAgentBase` | Deterministic. Costs $0, fully auditable. Paying a model to parse structure would be slower *and* wrong (§9). |
+| triage | Nova Lite | High volume, low visibility |
+| deep_read | Claude Sonnet 4.5 | What the judge reads |
+| ocr_fallback, archive | `MultiAgentBase` | Terminal states |
+
+A deterministic node still reports an `AgentResult`, because downstream nodes
+read prior output in that shape - so code nodes and agent nodes are
+interchangeable to the Graph.
+
+## Three paths, all verified by execution — not just drawn
+
+**1. Normal path** (5 nodes)
+
+    watch -> ingest -> segment -> triage -> deep_read
+    1790 pages, 42 image-only (2.3%), 51 items, 12 candidates, 3 decisions
+    $0.0215
+
+**2. Error edge** (3 nodes) - forced by lowering OCR_THRESHOLD to 1%
+
+    watch -> ingest -> ocr_fallback
+    "packet is largely image-only; evidence incomplete, escalating rather
+     than guessing"
+    alerts: None. The run stops rather than reasoning over text it cannot trust.
+
+**3. Archive / no-action path** (5 nodes)
+
+    watch -> ingest -> segment -> triage -> archive
+    "no action recommended; 51 items archived"     $0.0000 - no model calls
+
+Path 3 is Tier 2 item #6 landing early, and it is the cheapest run in the
+system: when nothing affects the household, QUORUM spends nothing and says so.
+
+## Graph configuration
+`set_max_node_executions(24)` and `set_execution_timeout(900)`. Strands warns
+when neither is set, because the lifecycle permits cycles (tracking an item
+across meetings revisits nodes).
+
+## Note on triage recall
+Running inside the Graph, triage now returns 12-14 candidates and the deep pass
+consolidates all twelve FY2027 tax items into **one** decision. Better than the
+6-candidate run recorded on Day 2, but the variance noted there is unchanged and
+still wants temperature=0 plus a deterministic rate/fee pre-filter.
+
+## Still to wire (Day 5)
+version_diff node, draft node, the interrupt, the Cedar policy gate, and the
+verification node. The lineage and diff code exists and is verified; it is not
+yet a graph node.
