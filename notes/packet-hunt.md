@@ -373,3 +373,65 @@ Verified by exact-string search over our own extracted text, both directions.
 The 2026-05-07 special-meeting packet segments to **0 items** - special meetings
 number items "1a", "1b" rather than "1.". The segmenter needs a special-meeting
 pattern before it can claim general coverage.
+
+---
+
+# THE IMPACT LEDGER — verified, 11 requests tracked (2026-09-05)
+
+Correction to the entry above: the Public Safety Policy Committee made
+**eleven** requests, not five. The segmenter captured the full 1,326-character
+`Policy Committee Recommendation:` field correctly; the earlier count came from
+truncating the display.
+
+## The real chain
+- **7 May 2026** - Council acts on public safety technology package; CVS policy
+  referred to PSPC via the Mayor's supplemental memorandum.
+  Policy text: `2026-05-07 Revised Special Agenda Packet`, **pp.125-129**.
+- **2 June 2026** - PSPC reviews and issues **11 requested revisions**
+  (Vote: All Ayes). Listed verbatim: 30 June packet **p.18** (agenda listing)
+  and **pp.1391-1392** (staff report).
+- **30 June 2026** - Department returns redlined policy + written responses.
+  Policy text: `2026-06-30 Agenda Packet`, **pp.1414-1419**.
+
+## Bounded diff (per-policy, section series 355.x)
+MAY 12,315 chars (pp.125-129) vs JUNE 15,183 chars (pp.1414-1419)
+**similarity 0.8957**, 16 change blocks, **6 substantive additions**:
+
+1. Pause integration of a camera repositioned to capture a private area
+2. **First Amendment protection** - no monitoring of lawful protests,
+   demonstrations or political gatherings
+3. Retention period tied to statute of limitations for the underlying offence
+4. **72-hour notification** to City Manager, City Attorney and Council if a
+   Federal Agency is given BPD-owned CVS data
+5. Audit frequency "biennial" -> "twice a year"
+6. OSPA audits must sample access logs to verify queries tie to a valid case
+
+## Ledger: request -> what actually happened
+| # | Committee asked | Outcome in the 30 June text |
+|---|---|---|
+| 1 | verify camera locations / moved cameras | **ADDED** (addition 1) |
+| 2 | notify camera owners when footage accessed | **DOWNGRADED** - see below |
+| 3 | remove vendor-specific references | **ADDED** (staff memo p.1395) |
+| 4 | real-time / live access rules | **ADDED** (staff memo p.1395) |
+| 5 | AI use + human oversight | **prose response only** (p.1394), not policy text |
+| 8 | strengthen audit provisions | **ADDED** (additions 5, 6) |
+| 9 | 72-hour immigration-related language | **ADDED** (addition 4) |
+| 11 | retention periods / liability | **ADDED** (addition 3) |
+| 6, 7, 10 | investigative software / audio | concern Policy 1307 - not yet diffed |
+
+## The centrepiece line — request 2, verbatim from p.1394
+> "At the request of the PSPC, the Department will include in the RFP a request
+> for vendors to describe the feasibility of notifying camera owners each time
+> BPD personnel access their feed. **This is not a minimum requirement for
+> vendor selection** but will be evaluated as a value-added feature..."
+
+The committee asked for a *process*. What appears is a *feasibility question to
+vendors, explicitly not required*. The provision was not deleted - it was
+quietly demoted. That is §10's "the provision you supported is gone", except it
+is real, it is citable to one page, and it is more interesting than deletion
+because a reader skimming the response would think the request was granted.
+
+## Why this is unfakeable
+Two public PDFs, two months apart, 176 and 1,790 pages. A judge opens both,
+searches one sentence, and sees it in one and not the other. No mock, no API,
+no staged data.
