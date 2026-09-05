@@ -12,8 +12,14 @@ Nothing here can file anything. Submission is gated by Cedar in
 from __future__ import annotations
 
 import json
+import os
 
-from strands import tool
+# The package resolves its cache location at import time, so this must be set
+# before any quorum module is imported. The runtime filesystem is read-only
+# apart from /tmp.
+os.environ.setdefault("QUORUM_CACHE_DIR", "/tmp/quorum-cache")
+
+from strands import tool  # noqa: E402
 
 from quorum.action import check_grounding, draft_comment, gate
 from quorum.household import load_profile
