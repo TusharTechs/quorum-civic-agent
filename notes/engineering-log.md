@@ -621,3 +621,59 @@ browser rather than assumed.
 
 The generated file is gitignored: it is output, and it embeds a timestamp, so
 committing it would produce noise on every run.
+
+---
+
+## 15. Investigation teams composed from the item
+
+`src/quorum/investigate.py`. Running four specialists over every agenda item is
+wasteful and worse: a fiscal analyst has nothing to say about a ceremonial
+resolution, and a civil-liberties reviewer has nothing to say about a playground
+contract. The team is composed from the item.
+
+Classification is **deterministic** — keyword and structure match over the item's
+own text. Which specialists to summon is not a judgement worth paying a model
+for, and a wrong team should be explainable.
+
+Across the 30 June agenda (51 items):
+
+| Type | Items | Team |
+|---|---|---|
+| other | 19 | household, procedure |
+| rate | 16 | fiscal, household, procedure |
+| contract | 6 | fiscal, procedure |
+| ceremonial | 5 | **none — archived, not investigated** |
+| parking | 2 | parcel, household, procedure |
+| zoning | 1 | precedent, parcel, procedure |
+| ballot | 1 | fiscal, household, procedure |
+| surveillance | 1 | liberties, precedent, procedure |
+
+Four specialists on everything would be **204 agent-runs**. Composed teams are
+**113** — 45% fewer, and the five ceremonial items summon nobody at all.
+
+### The first version was bad, and the numbers say why
+| | first attempt | after constraints |
+|---|---|---|
+| input tokens (one item) | 45,882 | **12,066** |
+| cost for one item | $0.0742 | **$0.0195** |
+| committee revisions cited | "nine", then "10" | **"eleven"** (correct) |
+| deadline | invented "48-72 hours" | **"the text gives no deadline"** |
+
+Two failures, both instructive:
+
+1. **A handoff loop.** Civil Liberties and Procedure spent several turns
+   negotiating whose question it was. One item cost 3.7x a full pipeline run and
+   produced nothing extra. Fixed with `repetitive_handoff_detection_window`,
+   `max_handoffs=3`, and an explicit instruction not to negotiate scope.
+2. **Invented specifics.** The swarm asserted a comment deadline that appears
+   nowhere in the item, and miscounted the committee's revisions twice. Fixed by
+   forbidding any number, count, date or deadline not present in the given text,
+   and requiring it to say so when the text gives none. It now does exactly that.
+
+### Where this sits in the product
+The **composition** is the strong part: deterministic, explainable, and it
+measurably reduces work. The swarm's prose is an internal research aid, not
+user-facing copy — it still infers (it described cameras as possibly deployed on
+a specific street, which the text does not say) and it mislabelled the
+procedural stage. User-facing alerts continue to come from the grounded path
+with verified arithmetic and cited quotes.
