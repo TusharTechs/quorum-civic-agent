@@ -17,6 +17,25 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+# The mark is inlined, not linked: the page must stay a single self-contained
+# file that renders from disk with no network.
+MARK = """<svg class="mark" viewBox="0 0 64 64" width="34" height="34" aria-hidden="true">
+  <path d="M10 42 A22 22 0 0 1 54 42" fill="none" stroke="var(--ink)"
+        stroke-width="5.5" stroke-linecap="round"/>
+  <path d="M14 54 H50" stroke="var(--ink)" stroke-width="5.5"
+        stroke-linecap="round" opacity=".3"/>
+  <circle cx="47.6" cy="26.4" r="10.5" fill="none" stroke="var(--bg)" stroke-width="3"/>
+  <circle cx="47.6" cy="26.4" r="8.5" fill="var(--accent)"/>
+</svg>"""
+
+FAVICON = (
+    "data:image/svg+xml,"
+    "%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E"
+    "%3Cpath d='M10 42 A22 22 0 0 1 54 42' fill='none' stroke='%2316181d'"
+    " stroke-width='6' stroke-linecap='round'/%3E"
+    "%3Ccircle cx='47.6' cy='26.4' r='9' fill='%231c4f8a'/%3E%3C/svg%3E"
+)
+
 CSS = """
 :root {
   --bg: #f6f5f2; --panel: #ffffff; --ink: #16181d; --muted: #5b6472;
@@ -42,6 +61,8 @@ body {
 }
 .wrap { max-width: 860px; margin: 0 auto; padding: 40px 22px 80px; }
 header { border-bottom: 2px solid var(--ink); padding-bottom: 14px; margin-bottom: 28px; }
+.brandrow { display: flex; align-items: center; gap: 10px; }
+.mark { flex: none; }
 .brand { font-size: 13px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
 h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 4px; letter-spacing: -.01em; }
 .sub { color: var(--muted); font-size: 15px; }
@@ -233,11 +254,12 @@ def render(ctx, *, jurisdiction: str = "Berkeley, California",
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="{FAVICON}">
 <title>Why QUORUM interrupted you &mdash; {_e(ctx.meeting_date)}</title>
 <style>{CSS}</style>
 </head><body><div class="wrap">
   <header>
-    <div class="brand">QUORUM</div>
+    <div class="brandrow">{MARK}<span class="brand">QUORUM</span></div>
     <h1>Why QUORUM interrupted you</h1>
     <p class="sub">{_e(jurisdiction)} &middot; {_e(ctx.meeting_date)} &middot;
       read while you were asleep, unprompted</p>

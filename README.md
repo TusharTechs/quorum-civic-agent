@@ -8,8 +8,7 @@
 </p>
 
 <p align="center">
-  <a href="https://REPLACE-WITH-YOUR-VERCEL-URL.vercel.app"><b>Live demo</b></a> &nbsp;·&nbsp;
-  <a href="https://REPLACE-WITH-YOUR-VIDEO-URL"><b>Demo video</b></a> &nbsp;·&nbsp;
+  <a href="https://quorum-civic-agent.vercel.app/"><b>Live demo</b></a> &nbsp;·&nbsp;
   <a href="#architecture"><b>Architecture</b></a> &nbsp;·&nbsp;
   <a href="#verify-this-yourself-in-90-seconds"><b>Verify it yourself</b></a> &nbsp;·&nbsp;
   <a href="notes/engineering-log.md"><b>Engineering log</b></a>
