@@ -1,0 +1,24 @@
+{
+  "_note": "Synthetic demo household. Not a real person. The address is a real Berkeley street used so geographic reasoning runs against real geography; no resident is identified.",
+  "label": "Demo household — Berkeley District 5",
+  "address": "1600 block, Hopkins Street, Berkeley, CA 94707",
+  "council_district": 5,
+  "tenure": "owner",
+  "dwelling_sqft": 1450,
+  "assessed_value_usd": 1200000,
+  "household": [
+    {"role": "adult", "commute": "bicycle to Downtown Berkeley, weekdays"},
+    {"role": "adult", "commute": "car to Emeryville, 3 days a week"},
+    {"role": "child", "school": "Berkeley Unified School District, elementary"}
+  ],
+  "vehicles": 1,
+  "parking": "street parking only, no driveway",
+  "mobility_needs": "none",
+  "small_business": null,
+  "stated_interests": [
+    "street safety near the school route",
+    "property taxes and city fees",
+    "parks and street trees",
+    "housing development on nearby blocks"
+  ]
+}

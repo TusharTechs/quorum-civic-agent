@@ -188,3 +188,42 @@ That is genuine reasoning on real data, and it is checkable by any judge.
 ## Bedrock
 Anthropic use case form propagated; Sonnet, Haiku and Strands streaming all
 confirmed working in us-west-2.
+
+---
+
+# Day 2 result — stake matching (Tier 1 item #2) — DONE
+
+Two-stage routed pipeline, per §9:
+  triage : Nova Lite over all 51 items (title + first 600 chars of recommendation)
+  brief  : Claude Sonnet 4.5 over survivors only, producing WHAT / WHY YOU /
+           WHY NOW / EVIDENCE with a verbatim quote and a page-anchored URL.
+
+**Attention efficiency on a real packet: 1,790 pages -> 51 items -> 6 candidates
+-> 2 decisions.**  Cost: **$0.0200 per run** (target was <$0.39).
+
+## Consolidation is the differentiator
+First version emitted five near-identical alerts, one per tax item. Tier 1 #2
+says surface 1-2 items, so alerts are now keyed to a **decision**, not an agenda
+item: the FY2027 tax rates collapse into one alert stating the combined
+household effect. A summariser cannot do this - it has no household to sum
+against. This is also the Attention Efficiency beat (Tier 2 #10).
+
+## Known weakness — triage recall is unstable
+Across three runs Nova Lite returned 5, then 16, then 6 candidates from the same
+51 items. In the 6-candidate run it caught only 4 of the 8 per-sq-ft dwelling
+taxes, so the consolidated total read $1,207 rather than the true $1,611.92.
+
+Not a blocker, but this is the single biggest quality risk in the pipeline, and
+it is exactly what the Evaluations harness (Tier 3 #12) exists to measure.
+Cheap mitigations, in order:
+  1. temperature=0 on the triage model
+  2. deterministic pre-filter: any item whose recommendation matches a
+     rate/fee/tax pattern always reaches the deep pass, no LLM judgement
+  3. score the deep pass against a hand-labelled key for this packet
+
+## API note
+`Agent.structured_output()` is deprecated in strands-agents 1.54. Use
+`agent(prompt, structured_output_model=Model)`, which returns an AgentResult
+carrying both `.structured_output` and `.metrics.accumulated_usage`. The
+deprecated path returns the model only, and token metrics read as zero - which
+silently breaks the §9 cost counter.
