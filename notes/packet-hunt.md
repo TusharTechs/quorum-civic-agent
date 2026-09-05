@@ -227,3 +227,66 @@ Cheap mitigations, in order:
 carrying both `.structured_output` and `.metrics.accumulated_usage`. The
 deprecated path returns the model only, and token metrics read as zero - which
 silently breaks the §9 cost counter.
+
+---
+
+# Day 3 — lineage resolution + version diff (Tier 1 item #3)
+
+## Cross-meeting entity resolution — WORKING
+Resolved 96 items across three meetings (2026-03-10, 2026-03-24, 2026-06-30)
+into 93 lineages, **2 of which genuinely span meetings**. Identity is
+established deterministically (BMC section, ordinance number) and is therefore
+auditable; the LLM is never used to decide identity, only to explain a diff.
+
+### Lineage A — BMC 23.324.050 (zoning)
+| | 2026-03-10 | 2026-03-24 |
+|---|---|---|
+| item number | 14 | 1 |
+| ordinance | *(none)* | 8,003-N.S. |
+| calendar | Action / public hearing | Consent |
+| page | 9 | 3 |
+
+The draft in the first-reading packet is literally headed **"ORDINANCE NO.
+-N.S."** - a blank identifier. The decision has no number until it passes.
+That is the "no shared key" argument in one screenshot.
+
+### Lineage B — BMC 2.12 (Berkeley Election Reform Act)
+item 15 -> item 2, gained Ordinance 8,004-N.S., public hearing -> second reading.
+
+### Rejected: a false lineage, and why it matters
+"Minutes for Approval" matched itself across 2026-03-24 and 2026-06-30 at title
+similarity 1.00. It is a standing fixture, not one decision travelling. Lineages
+now carry a `confidence`: **strong** only when a hard identifier (BMC section or
+ordinance number) ties versions together; title similarity alone is **weak** and
+excluded by default. Worth saying out loud in the video - the resolver knows the
+difference between a recurring agenda item and a tracked decision.
+
+## Version diff — WORKING, and it says "no amendment"
+The `Recommendation:` line is only a summary. A real amendment appears in the
+**enacting text**, so the diff compares that. In a first-reading packet the
+draft ordinance is embedded inside a staff report with no closing heading, so
+the body must be bounded by content, not page count.
+
+Result for Lineage A: enacting text **97.84% similar**, 3 change blocks, **all
+three page furniture** ("Page 6 of 11" vs "Page 1 of 2"). Verdict:
+`amended_between_readings: false`.
+
+**This is a correct and honest answer, and the machinery is right.** But it is
+not yet the §10 centrepiece beat, which needs a lineage whose *content* changed.
+
+## Outcome extraction — WORKING (Tier 1 item #5, earlier than planned)
+The second-reading packet carries the recorded vote verbatim, so the Civic
+Change Graph `outcome` field fills without needing the minutes:
+
+    ayes   Bartlett, Blackaby, Humbert, Kesarwani, Lunaparra,
+           O'Keefe, Taplin, Tregub, Ishii
+    noes   none      absent none      tally 9-0    source page 19
+
+## Next: find a lineage with real content change
+Best lead is Berkeley's **"Revised Agenda Material"**, published in Supplemental
+Packets 1 and 2 between the original packet and the vote. That is where an item
+is actually rewritten before the vote, and it lines up exactly with the tiered
+deadlines in §6 - the revision lands *after* most people have read the original.
+That is the true "the provision you supported is gone" beat, and it is a
+stronger story than a first/second reading diff because the change arrives
+inside the comment window.

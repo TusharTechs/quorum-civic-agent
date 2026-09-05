@@ -33,6 +33,14 @@ FIELD_LABELS = (
 # An item begins with its number alone on a line.
 ITEM_START = re.compile(r"^[ \t]*(\d{1,3})\.[ \t]*$", re.M)
 
+# The agenda listing ends here. Without this the final item absorbs the
+# boilerplate that follows it (legal notices, adjournment, minutes text).
+LISTING_END = re.compile(
+    r"^[ 	]*(Public Comment\s*[-–]\s*Items Not Listed|Adjournment|"
+    r"NOTICE CONCERNING YOUR LEGAL RIGHTS)",
+    re.M,
+)
+
 
 @dataclass
 class AgendaItem:
@@ -105,9 +113,12 @@ def segment(packet: dict, *, listing_pages: int = 30) -> list[AgendaItem]:
             starts.append((match.start(), match.end(), number))
             expected += 1
 
+    tail = LISTING_END.search(text, starts[-1][1]) if starts else None
+    listing_end = tail.start() if tail else len(text)
+
     items: list[AgendaItem] = []
     for index, (start, marker_end, number) in enumerate(starts):
-        end = starts[index + 1][0] if index + 1 < len(starts) else len(text)
+        end = starts[index + 1][0] if index + 1 < len(starts) else listing_end
         title, fields = _split_fields(text[marker_end:end])
         items.append(
             AgendaItem(
