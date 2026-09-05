@@ -28,6 +28,9 @@ FIELD_LABELS = (
     "Contact:",
     "Vote:",
     "First Reading Vote:",
+    # Annotated agendas carry what the Council actually did.
+    "Action:",
+    "Recommendation Adopted:",
 )
 
 # An item begins with its number alone on a line.

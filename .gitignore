@@ -26,3 +26,10 @@ Thumbs.db
 
 # runtime session state (interrupts, message history)
 data/sessions/
+
+# AgentCore scaffold: local env, build output, nested venvs
+deploy/**/.venv/
+deploy/agentcore/.env.local
+deploy/agentcore/.cli/
+deploy/agentcore/cdk/cdk.out/
+deploy/agentcore/cdk/node_modules/
