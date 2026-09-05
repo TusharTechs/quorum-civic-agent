@@ -290,3 +290,86 @@ deadlines in §6 - the revision lands *after* most people have read the original
 That is the true "the provision you supported is gone" beat, and it is a
 stronger story than a first/second reading diff because the change arrives
 inside the comment window.
+
+---
+
+# THE CENTREPIECE — found and verified (2026-09-05)
+
+**Item 46, 30 June 2026 — Surveillance Technology Ordinance: Community Video
+Streams (BPD Policy 1306 / LESM 355) and Investigative Software.**
+
+A police surveillance policy that was **materially rewritten between two
+published packets**, where the rewrite answers specific public-committee
+requests. Every step is citable to a page in a public PDF.
+
+## The chain
+
+**7 May 2026** — Council refers the Community Video Streams Acquisition Report
+and Surveillance Use Policy to the Public Safety Policy Committee.
+Policy text: `2026-05-07 Revised Special Agenda Packet`, pp.125-137.
+
+**Public Safety Committee** asks for five specific revisions (carried verbatim
+in the 30 June packet, item 46, `Policy Committee Recommendation:`, p.18):
+  1. Clarify how participating camera locations will be verified and address
+     liability if cameras are moved
+  2. Develop a process for notifying camera owners when footage is accessed
+  3. Remove vendor-specific references from the acquisition report
+  4. Clarify policies governing access to real-time / live video monitoring
+  5. Provide additional information regarding the use of artificial intelligence
+
+**30 June 2026** — staff return with redlined policy. The staff memo at **p.1395**
+states what the redline does, and it maps directly onto the committee's asks:
+  - "To generalize references in the CVS acquisition report and to clarify that
+     no vendor selection has been made or is implied."        -> request 3
+  - "To require prompt disconnection of any integrated camera found to have been
+     repositioned to capture an area where a reasonable expectation of privacy
+     exists."                                                  -> request 1
+  - "To clarify that real-time access to live video streams is permitted only
+     when there is an active CAD incident or call..."          -> request 4
+
+## The verified diff
+
+New operative sentence, **absent from the 7 May packet, present in the 30 June
+packet**:
+
+> "Upon discovery that an integrated camera has been repositioned to capture an
+> area where a reasonable expectation of privacy exists, the Department shall
+> immediately pause that camera's integration until the camera is positioned in
+> compliance with this policy."
+
+| Packet | Contains the clause? | Pages |
+|---|---|---|
+| 2026-05-07 Revised Special Agenda Packet | **NO** | - |
+| 2026-06-30 Agenda Packet | **YES** | 1395, 1402, 1413, 1415 |
+| 2026-06-30 Revised Agenda Packet | **YES** | 1419, 1426, 1437, 1439 |
+
+Verified by exact-string search over our own extracted text, both directions.
+
+## Why this is the right centrepiece
+
+1. **The change is real and substantive** - a new privacy safeguard on police
+   camera integration, not a renumbering.
+2. **It is causally traceable.** A committee asked; the department answered;
+   the answer is in the text. QUORUM can report *which of the five requests
+   survived* - that is the Impact Ledger, on real data, across two months.
+3. **A judge can verify it in ninety seconds.** Open two public PDFs, search one
+   sentence, find it in one and not the other.
+4. **It inverts the brief's example productively.** §10 imagined "the provision
+   you supported is gone." Here it is "the safeguard the committee asked for was
+   added, and two of the five asks are not visibly addressed." Both directions
+   are the same capability, and the honest version is more interesting.
+5. **Identity drifted too**: the same policy is "LESM 355" in May and
+   "BPD Policy 1306" in June. Renumbering, on the centrepiece item.
+
+## Open items on this lineage
+- Requests 2 (notifying camera owners) and 5 (AI use) are not in the staff
+  memo's change list. Confirm whether they appear in the policy text; if not,
+  that is precisely the "you asked, it did not happen" beat.
+- The May policy extraction (pp.125-137) over-runs into the adjacent
+  Investigative Software policy. Bound extraction per-policy before quoting a
+  similarity number.
+
+## Segmenter limitation found
+The 2026-05-07 special-meeting packet segments to **0 items** - special meetings
+number items "1a", "1b" rather than "1.". The segmenter needs a special-meeting
+pattern before it can claim general coverage.
