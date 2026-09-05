@@ -27,6 +27,7 @@ from strands.telemetry.metrics import EventLoopMetrics
 
 from . import ingest as ingest_mod
 from . import segment as segment_mod
+from . import cost as cost_mod
 from . import stake as stake_mod
 from .household import load_profile
 
@@ -48,6 +49,7 @@ class RunContext:
     alerts: Any = None
     unparseable_ratio: float = 0.0
     archived: list[int] = field(default_factory=list)
+    cost: Any = None
     usage: dict[str, dict] = field(default_factory=dict)
     log: list[str] = field(default_factory=list)
 
@@ -93,6 +95,28 @@ class Step(MultiAgentBase):
         )
 
 
+def _cost_summary(cost) -> str:
+    """The household figures, stated as computed fact for the drafting model."""
+    if cost is None or not cost.included:
+        return ""
+    lines = [
+        f"This household: {cost.dwelling_sqft:,} sq ft, "
+        f"assessed ${cost.assessed_value_usd:,}.",
+        f"Per-square-foot dwelling taxes total ${cost.sqft_rate_total:.5f}/sq ft "
+        f"= ${cost.sqft_cost:,.2f}/year (items "
+        f"{[r.item_number for r in cost.rates if r.basis == 'per_sqft_dwelling']}).",
+        f"Assessed-value taxes total {cost.assessed_percent_total:.4f}% "
+        f"= ${cost.assessed_cost:,.2f}/year (items "
+        f"{[r.item_number for r in cost.rates if r.basis == 'assessed_value']}).",
+        f"COMBINED ANNUAL TOTAL: ${cost.annual_total:,.2f} across "
+        f"{len(cost.item_numbers)} agenda items.",
+    ]
+    for r in cost.excluded:
+        lines.append(f"EXCLUDED item {r.item_number}: {r.excluded_reason}. "
+                     f"Do not include it in the household total.")
+    return "\n".join(lines)
+
+
 # --- node bodies -------------------------------------------------------------
 
 def _watch(ctx: RunContext) -> str:
@@ -115,13 +139,29 @@ def _segment(ctx: RunContext) -> str:
 
 
 def _triage(ctx: RunContext) -> str:
+    """Cheap model pass, unioned with a deterministic floor.
+
+    Model triage recall varies between runs on identical input. A tax levied on
+    this household's dwelling affects it whether or not a model notices, so
+    rate-bearing items bypass triage entirely. The model decides the judgement
+    calls; it does not get a vote on arithmetic that is already established.
+    """
     verdicts, usage = stake_mod.triage(ctx.items, ctx.profile)
     ctx.usage["triage"] = usage
     by_number = {i["number"]: i for i in ctx.items}
-    hits = [v.item_number for v in verdicts.items if v.affects_household]
-    ctx.candidates = [by_number[n] for n in hits if n in by_number]
-    ctx.archived = [i["number"] for i in ctx.items if i["number"] not in set(hits)]
-    return f"{len(ctx.candidates)} candidates, {len(ctx.archived)} archived"
+
+    hits = {v.item_number for v in verdicts.items if v.affects_household}
+
+    ctx.cost = cost_mod.compute(ctx.items, ctx.profile)
+    always = {r.item_number for r in ctx.cost.included}
+    missed = sorted(always - hits)
+
+    selected = sorted(hits | always)
+    ctx.candidates = [by_number[n] for n in selected if n in by_number]
+    ctx.archived = [i["number"] for i in ctx.items if i["number"] not in set(selected)]
+
+    note = f", {len(missed)} added by rate filter {missed}" if missed else ""
+    return f"{len(ctx.candidates)} candidates, {len(ctx.archived)} archived{note}"
 
 
 def _ocr_fallback(ctx: RunContext) -> str:
@@ -136,7 +176,13 @@ def _archive(ctx: RunContext) -> str:
 
 
 def _deep_read(ctx: RunContext) -> str:
-    alerts, usage = stake_mod.build_alerts(ctx.candidates, ctx.profile, ctx.meeting_date)
+    # Arithmetic is done in code and handed to the model as fact. Letting a
+    # model multiply the number the whole alert rests on is a hallucination
+    # surface for no benefit.
+    alerts, usage = stake_mod.build_alerts(
+        ctx.candidates, ctx.profile, ctx.meeting_date,
+        cost_summary=_cost_summary(ctx.cost),
+    )
     ctx.usage["deep"] = usage
     ctx.alerts = alerts
     return f"{len(alerts.alerts)} decision-level alert(s)"

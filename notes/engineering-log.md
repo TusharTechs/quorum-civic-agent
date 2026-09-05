@@ -529,3 +529,58 @@ output an AI summary, and report the policy engine's refusal exactly as given.
 
 Verified locally: all four tools load, `agentcore validate` returns `Valid`, and
 the existing pipeline regressions still pass after the path refactor.
+
+---
+
+## 13. Household cost, and why the model is not allowed to do the arithmetic
+
+`src/quorum/cost.py` classifies every rate item on an agenda and totals what it
+costs one household. Classification, not arithmetic, is the hard part — a single
+agenda phrases three different bases almost identically.
+
+Result for 30 June 2026, a 1,450 sq ft dwelling assessed at $1.2M:
+
+```
+per square foot of dwelling   $1.11167/sqft   x 1,450      = $1,611.92
+percent of assessed value     0.0490%         x $1,200,000 =   $588.00
+                                                             ----------
+                                                             $2,199.92
+```
+
+across **13 separate agenda items**. Every rate carries the item number, packet
+page and ordinance number it was read from, so a wrong figure is traceable
+rather than merely wrong.
+
+Two rates are excluded and both look like household rates:
+- item 4, `$0.9168 per square foot of improvements` — **large non-profits only**
+- item 20, a per-trip tax on ride-hailing — not levied on property
+
+A naive sum of everything matching "per square foot" gives **$3,529.28**,
+overstating this household by **$1,329.36 a year**.
+
+### Evidence that the model should not compute this
+Before the figures were computed in code, the drafting model was asked to
+consolidate the tax items itself. It reported the per-square-foot total as
+**$0.89/sq ft** against a true **$1.11167**. It was not obviously wrong on the
+page — it read like a confident, specific number.
+
+The arithmetic is therefore done in Python and handed to the model as
+established fact, with the instruction to use the figures verbatim and not
+re-derive them. The model's job is to explain a number, not to produce one.
+Verified: the alert now states $2,199.92, matching the code exactly.
+
+### A deterministic floor beneath model triage
+Model triage recall varied between runs on identical input (5, 16, 12, 8, 15
+candidates across runs), and in one run dropped item 7 — a tax the household
+actually pays.
+
+Rate-bearing items now **bypass triage entirely**: any item whose recommendation
+classifies as a dwelling or assessed-value rate is always a candidate. A tax
+levied on this household's home affects it whether or not a model notices.
+
+In the verified run the filter added items 13 and 15, which triage had missed,
+and all 13 tax items reached the alert. The model still makes the judgement
+calls — parking, ballot measures, zoning — it simply gets no vote on facts
+already established in code.
+
+This closes the largest known quality risk recorded in section 9.

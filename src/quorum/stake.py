@@ -87,7 +87,8 @@ def triage(items: list[dict], profile: dict) -> tuple[TriageResult, dict]:
 
 
 def build_alerts(
-    candidates: list[dict], profile: dict, meeting_date: str
+    candidates: list[dict], profile: dict, meeting_date: str,
+    cost_summary: str = "",
 ) -> tuple[AlertSet, dict]:
     """Expensive pass over survivors only. Produces the four-question alert."""
     detail = "\n\n".join(
@@ -111,7 +112,11 @@ def build_alerts(
     prompt = (
         f"HOUSEHOLD PROFILE\n{describe(profile)}\n\n"
         f"MEETING DATE: {meeting_date}\n\n"
-        f"CANDIDATE ITEMS\n{detail}\n\n"
+        + (f"VERIFIED ARITHMETIC - computed in code, not by you. Use these "
+           f"figures verbatim; do not recalculate, re-derive or round "
+           f"them:\n{cost_summary}\n\n"
+           if cost_summary else "")
+        + f"CANDIDATE ITEMS\n{detail}\n\n"
         "Write one alert per DECISION, not per agenda item. Where several "
         "items are the same decision split across the agenda (for example a "
         "set of annual tax rates), consolidate them into a single alert and "
