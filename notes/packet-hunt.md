@@ -86,3 +86,105 @@ first thing the ingest code should do anyway.
 - https://berkeleyca.gov/your-government/city-council/city-council-agendas
 - https://berkeleyca.gov/city-council-regular-meeting-eagenda-june-30-2026
 - https://berkeleyca.gov/city-council-regular-meeting-eagenda-march-24-2026
+
+---
+
+# Day 1 — ingest measurement (2026-09-05)
+
+Ingested the real 30 June 2026 packet. **The brief's §9 size assumption is wrong
+by an order of magnitude and the cost model needs restating.**
+
+| Measure          | Brief §9 assumption | Actual (2026-06-30 Berkeley) |
+|------------------|---------------------|------------------------------|
+| Pages            | ~300                | **1,790**                    |
+| File size        | not stated          | **62.2 MB**                  |
+| Characters       | —                   | 7,632,405                    |
+| Est. tokens      | ~200,000            | **~1,908,000  (9.5x)**       |
+| Image-only pages | —                   | 42 (<50 chars)               |
+
+sha256 df379687006c6d3f... retrieved 2026-09-05T11:48Z
+
+## What this changes
+
+1. **Never send a whole packet to Sonnet.** One full pass would be ~$3.80 input
+   alone. §9's "naive $1.80/run" is really ~$8/run at this size.
+2. **Routing still holds and is now the whole ballgame.** Nova Lite over the full
+   text is ~$0.11 input. Deep-read stays scoped to candidate items only
+   (3 items x ~20pp x ~700 tok = ~42k tok -> ~$0.08 on Sonnet).
+   Target remains well under $0.50/run.
+3. **Segment from structure, not brute force.** The agenda item list sits in the
+   first ~30 pages. Segment off that plus page headers rather than streaming
+   1.9M tokens through any model.
+4. **The OCR fallback error edge has real material** — 42 image-only pages,
+   running in consecutive even numbers from p.40 (scanned attachments). This is
+   Tier 2 item #7, and it is genuine, not manufactured.
+
+## Demo impact — this is an upgrade
+
+§10's opening beat says "the real 312-page packet". The true number is **1,790
+pages**. Use it. "Your city published 1,790 pages on Tuesday. Nine people read
+it." is a stronger and *verifiable* opening line.
+
+## Operational note for the Watcher
+Berkeley's WAF returns **403 to HEAD requests**. Probe with a ranged GET
+(`Range: bytes=0-2047`) plus a browser User-Agent. Plain GET on HTML is fine.
+
+---
+
+# Day 1 result — segmentation + verified household arithmetic
+
+## Segmentation (Tier 1 item #1) — DONE
+51 of 51 agenda items extracted from the 1,790-page packet by **pure structure,
+zero LLM cost**. Berkeley's front matter (pp.3-19) is rigidly formatted:
+
+    N.
+    <title>
+    From: / Recommendation: / Financial Implications: / Contact:
+
+Sub-items nested inside a Recommendation (items 31 and 46 each contain their own
+1./2./3. lists) are rejected by requiring item numbers to run consecutively.
+Output: `data/cache/items_2026-06-30.json`.
+
+## Household cost — hunt criterion (c) CONFIRMED, with a correction
+
+A naive regex over "per square foot" gives the WRONG answer. The 15 tax-rate
+items use **three different rate bases**, and they must be separated:
+
+**A. Per square foot of dwelling improvements — 8 items, these apply to a home**
+
+| Item | Ordinance   | $/sq ft | Basis                              |
+|------|-------------|---------|------------------------------------|
+| 2    | 8,013-N.S.  | 0.06297 | for dwelling units                 |
+| 3    | 8,014-N.S.  | 0.31280 | for dwelling units                 |
+| 7    | 8,018-N.S.  | 0.02339 | of improvements                    |
+| 8    | 8,019-N.S.  | 0.07026 | of improvements for dwelling units |
+| 9    | 8,020-N.S.  | 0.13633 | of improvements                    |
+| 10   | 8,021-N.S.  | 0.04920 | of improvements                    |
+| 12   | 8,023-N.S.  | 0.27830 | of improvements                    |
+| 14   | 8,025-N.S.  | 0.17842 | of dwelling unit improvements      |
+|      | **TOTAL**   | **1.11167** |                                |
+
+**B. Percent of assessed value (ad valorem) — 5 items**
+items 5, 6, 11, 13, 15 -> 0.0075 + 0.0200 + 0.0140 + 0.0035 + 0.0040
+= **0.0490% of assessed value**
+
+**C. Excluded — do NOT count toward a household**
+- item 4  (8,015-N.S.) $0.9168/sq ft — **large non-profits only**, not dwellings
+- item 20 TNC user tax — 65.1005c per trip, not property
+
+### Worked example
+A 1,450 sq ft home assessed at $1.2M:
+  1,450 x $1.11167          = $1,611.92
+  $1,200,000 x 0.0490%      =   $588.00
+  **TOTAL ~ $2,199.92 / year**, spread across **13 separate agenda items**,
+  all of them on the consent calendar.
+
+### Why this is the Code Interpreter beat
+Getting it right requires distinguishing three rate bases across 15 items and
+excluding a $0.9168 rate that looks like the biggest one but applies to
+non-profits. A naive sum overstates a 1,450 sq ft household by **$1,329/year**.
+That is genuine reasoning on real data, and it is checkable by any judge.
+
+## Bedrock
+Anthropic use case form propagated; Sonnet, Haiku and Strands streaming all
+confirmed working in us-west-2.
