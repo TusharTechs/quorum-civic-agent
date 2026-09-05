@@ -15,8 +15,7 @@ from pathlib import Path
 
 import cedarpy
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-POLICY_FILE = PROJECT_ROOT / "policy" / "quorum.cedar"
+from .paths import policy_file
 
 
 @dataclass
@@ -45,7 +44,7 @@ class Decision:
 
 
 def _policies() -> str:
-    return POLICY_FILE.read_text(encoding="utf-8")
+    return policy_file().read_text(encoding="utf-8")
 
 
 def _explain(context: ActionContext) -> list[str]:

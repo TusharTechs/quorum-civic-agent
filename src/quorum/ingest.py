@@ -15,8 +15,9 @@ from pathlib import Path
 import pymupdf
 import httpx
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-CACHE_DIR = PROJECT_ROOT / "data" / "cache"
+from .paths import cache_dir
+
+CACHE_DIR = cache_dir()
 
 # Berkeley's WAF returns 403 to HEAD requests and to unadorned clients, but
 # serves GET normally. Probe with a ranged GET, never HEAD.

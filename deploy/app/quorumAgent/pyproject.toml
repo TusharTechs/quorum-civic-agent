@@ -14,7 +14,9 @@ dependencies = [
     "botocore[crt] >= 1.35.0",
     "mcp ~= 1.24.0",
     "strands-agents >= 1.15.0",
-    
+    # The pipeline itself. Installed from the public repository rather than
+    # copied into this directory, so there is one source of truth.
+    "quorum @ git+https://github.com/TusharTechs/quorum-civic-agent@main",
 ]
 
 [tool.hatch.build.targets.wheel]

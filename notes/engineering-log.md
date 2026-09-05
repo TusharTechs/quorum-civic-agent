@@ -475,3 +475,57 @@ and cost nothing.
 
 Idle compute is the expensive failure mode, not active compute: a runtime left
 alive bills continuously while a full pipeline run costs about two cents.
+
+---
+
+## 12. Making the package deployable
+
+The pipeline modules originally resolved their data by walking up the source
+tree (`Path(__file__).parents[2]`). That works from a checkout and breaks the
+moment the package is installed or zipped into a runtime — the cache directory,
+the household profile and the Cedar policy would all have been missing.
+
+`src/quorum/paths.py` now resolves each location in a fixed order:
+
+1. an environment variable — `QUORUM_CACHE_DIR`, `QUORUM_PROFILE`, `QUORUM_POLICY`
+2. data bundled inside the installed package
+3. the repository checkout
+
+The cache falls back to a temp directory when its target is unwritable, so a
+read-only deployment still runs. The policy does **not** fall back: if no Cedar
+policy can be found, it raises. An action gate that cannot load its policy must
+fail closed, not open.
+
+The Cedar policy and default profile are bundled into the wheel via hatch
+`force-include`, so an installed copy enforces policy with no checkout present.
+
+### One source of truth for the deployed agent
+AgentCore CodeZip packages only `codeLocation` (`deploy/app/quorumAgent/`), so
+the pipeline would have had to be copied in. Instead the deployed app declares
+a dependency on the package itself:
+
+    "quorum @ git+https://github.com/TusharTechs/quorum-civic-agent@main"
+
+No duplicated source, and the deployed agent runs exactly the code in this
+repository.
+
+**This makes the repository a build dependency of its own deployment.** The
+root `pyproject.toml` must be pushed to `main` before `agentcore deploy` will
+resolve.
+
+### The deployed agent
+`deploy/app/quorumAgent/skills/quorum_tools.py` exposes four tools:
+
+| Tool | Does |
+|---|---|
+| `analyse_packet` | runs the whole Graph, returns decisions with page citations and the run's token usage |
+| `track_decision` | resolves one decision across several meetings despite renumbering |
+| `verify_outcome` | reads the Annotated Agenda and reports what the council actually did |
+| `prepare_comment` | drafts, verifies grounding, asks Cedar — and never files |
+
+The system prompt states the constraints the code enforces: lead with the
+decision, cite every claim, say plainly when nothing is relevant, never call the
+output an AI summary, and report the policy engine's refusal exactly as given.
+
+Verified locally: all four tools load, `agentcore validate` returns `Valid`, and
+the existing pipeline regressions still pass after the path refactor.

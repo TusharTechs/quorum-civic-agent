@@ -1,0 +1,31 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "quorum"
+version = "0.1.0"
+description = "Reads city council agenda packets and tells a household what lands on their street"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+dependencies = [
+    "boto3>=1.40",
+    "cedarpy>=4.8",
+    "httpx>=0.28",
+    "pydantic>=2.10",
+    "pymupdf>=1.26",
+    "strands-agents>=1.50",
+]
+
+[project.optional-dependencies]
+tools = ["strands-agents-tools>=0.8"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/quorum"]
+
+# The Cedar policy and the default household profile ship inside the wheel, so
+# an installed copy can enforce policy without a repository checkout.
+[tool.hatch.build.targets.wheel.force-include]
+"policy/quorum.cedar" = "quorum/_data/quorum.cedar"
+"config/household.json" = "quorum/_data/household.json"

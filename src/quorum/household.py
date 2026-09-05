@@ -5,12 +5,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_PROFILE = PROJECT_ROOT / "config" / "household.json"
+from .paths import profile_path
 
 
 def load_profile(path: Path | None = None) -> dict:
-    return json.loads((path or DEFAULT_PROFILE).read_text(encoding="utf-8"))
+    return json.loads((path or profile_path()).read_text(encoding="utf-8"))
 
 
 def describe(profile: dict) -> str:
