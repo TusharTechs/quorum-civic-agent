@@ -36,3 +36,6 @@ deploy/agentcore/cdk/node_modules/
 
 # generated report output
 data/report.html
+
+# internal production material, not product documentation
+notes/video-script.md
