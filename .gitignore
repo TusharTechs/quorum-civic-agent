@@ -39,3 +39,6 @@ data/report.html
 
 # internal production material, not product documentation
 notes/video-script.md
+
+# logo scale preview, dev aid
+assets/preview.html

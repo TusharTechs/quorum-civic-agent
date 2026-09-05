@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="QUORUM logo: a council chamber arc with one seat filled.">
+<style>
+  .arc  { fill: none; stroke: #16181d; stroke-width: 5.5; stroke-linecap: round; }
+  .seat { fill: #1c4f8a; }
+  .ring { fill: none; stroke: #f6f5f2; stroke-width: 3; }
+  .floor{ stroke: #16181d; stroke-width: 5.5; stroke-linecap: round; opacity: .3; }
+  @media (prefers-color-scheme: dark) {
+    .arc   { stroke: #e8e9ec; }
+    .seat  { fill: #7fb0e8; }
+    .ring  { stroke: #14161a; }
+    .floor { stroke: #e8e9ec; }
+  }
+</style>
+<!-- A quorum is the minimum number present for a decision to count.
+     The arc is the chamber. The filled seat is you, finally in the room. -->
+<path class="arc" d="M10 42 A22 22 0 0 1 54 42"/>
+<path class="floor" d="M14 54 H50"/>
+<circle class="ring" cx="47.6" cy="26.4" r="10.5"/>
+<circle class="seat" cx="47.6" cy="26.4" r="8.5"/>
+</svg>

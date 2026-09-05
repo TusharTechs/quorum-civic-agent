@@ -1,0 +1,206 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 748" width="1040" height="748" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" role="img" aria-label="QUORUM architecture: a Strands Graph from watching published packets through to verifying outcomes, showing which stages are deterministic and which call a model.">
+<style>
+  :root { color-scheme: light dark; }
+  .ink   { fill: #16181d; }
+  .muted { fill: #5b6472; }
+  .panel { fill: #ffffff; stroke: #cfd4dc; }
+  .zone  { fill: #f2f4f7; stroke: #dfe3ea; }
+  .free  { fill: #eef4ee; stroke: #6f9c7d; }
+  .cheap { fill: #eef1f8; stroke: #7f92c4; }
+  .deep  { fill: #f2eef8; stroke: #9880c4; }
+  .gate  { fill: #f8eeef; stroke: #b8737f; }
+  .edge  { stroke: #7b8494; fill: none; }
+  .edge-err { stroke: #b8737f; fill: none; stroke-dasharray: 5 4; }
+  .edge-loop { stroke: #6f9c7d; fill: none; stroke-dasharray: 2 4; }
+  .arrow { fill: #7b8494; }
+  .arrow-err { fill: #b8737f; }
+  .arrow-loop { fill: #6f9c7d; }
+  text { font-size: 13px; }
+  .t-title { font-size: 20px; font-weight: 700; letter-spacing: -.2px; }
+  .t-sub { font-size: 12.5px; }
+  .t-node { font-size: 13.5px; font-weight: 650; }
+  .t-meta { font-size: 11px; }
+  .t-zone { font-size: 10.5px; font-weight: 700; letter-spacing: 1.4px; }
+  .t-edge { font-size: 11px; }
+  @media (prefers-color-scheme: dark) {
+    .ink   { fill: #e8e9ec; }
+    .muted { fill: #99a2b0; }
+    .panel { fill: #1e222a; stroke: #39404b; }
+    .zone  { fill: #191d24; stroke: #333a45; }
+    .free  { fill: #1b2620; stroke: #6f9c7d; }
+    .cheap { fill: #1c2130; stroke: #8ea1d2; }
+    .deep  { fill: #241f30; stroke: #a993d0; }
+    .gate  { fill: #2b1f23; stroke: #cf8b96; }
+    .edge  { stroke: #8b94a4; }
+    .arrow { fill: #8b94a4; }
+    .edge-err { stroke: #cf8b96; }
+    .arrow-err { fill: #cf8b96; }
+    .edge-loop { stroke: #7fae8d; }
+    .arrow-loop { fill: #7fae8d; }
+  }
+</style>
+<defs>
+  <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrow"/></marker>
+  <marker id="ae" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrow-err"/></marker>
+  <marker id="al" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrow-loop"/></marker>
+</defs>
+
+<text x="28" y="38" class="ink t-title">QUORUM — Strands Graph lifecycle</text>
+<text x="28" y="60" class="muted t-sub">The Graph is the coordinator. There is no supervisor agent above it. Measured on Berkeley's 30 June 2026 packet: 1,790 pages → 51 items → 3 decisions, $0.02.</text>
+
+<!-- ZONE: real world -->
+<rect x="24" y="86" width="176" height="150" rx="10" class="zone"/>
+<text x="40" y="108" class="muted t-zone">PUBLISHED RECORD</text>
+<rect x="40" y="120" width="144" height="46" rx="7" class="panel"/>
+<text x="52" y="139" class="ink t-node">berkeleyca.gov</text>
+<text x="52" y="156" class="muted t-meta">agenda packets, PDFs</text>
+<rect x="40" y="176" width="144" height="46" rx="7" class="panel"/>
+<text x="52" y="195" class="ink t-node">Annotated Agenda</text>
+<text x="52" y="212" class="muted t-meta">what was decided</text>
+
+<!-- ZONE: deterministic -->
+<rect x="228" y="86" width="200" height="256" rx="10" class="zone"/>
+<text x="244" y="108" class="muted t-zone">DETERMINISTIC · $0</text>
+
+<rect x="244" y="120" width="168" height="52" rx="7" class="free"/>
+<text x="256" y="140" class="ink t-node">Watch</text>
+<text x="256" y="157" class="muted t-meta">ranged GET (WAF 403s HEAD)</text>
+
+<rect x="244" y="182" width="168" height="52" rx="7" class="free"/>
+<text x="256" y="202" class="ink t-node">Ingest</text>
+<text x="256" y="219" class="muted t-meta">parse once, ever · cached</text>
+
+<rect x="244" y="244" width="168" height="52" rx="7" class="free"/>
+<text x="256" y="264" class="ink t-node">Segment</text>
+<text x="256" y="281" class="muted t-meta">51/51 items, no model</text>
+
+<rect x="244" y="306" width="168" height="24" rx="6" class="free"/>
+<text x="256" y="323" class="muted t-meta">Rate classifier → household cost</text>
+
+<!-- error edge target -->
+<rect x="244" y="368" width="168" height="52" rx="7" class="gate"/>
+<text x="256" y="388" class="ink t-node">OCR fallback</text>
+<text x="256" y="405" class="muted t-meta">halts: evidence incomplete</text>
+
+<!-- ZONE: triage -->
+<rect x="456" y="86" width="196" height="256" rx="10" class="zone"/>
+<text x="472" y="108" class="muted t-zone">TRIAGE</text>
+
+<rect x="472" y="120" width="164" height="56" rx="7" class="cheap"/>
+<text x="484" y="140" class="ink t-node">Model triage</text>
+<text x="484" y="157" class="muted t-meta">Nova Lite · all 51 items</text>
+<text x="484" y="170" class="muted t-meta">recall 0.27–1.00 across runs</text>
+
+<text x="546" y="196" class="muted t-meta" text-anchor="middle">∪ union</text>
+
+<rect x="472" y="206" width="164" height="56" rx="7" class="free"/>
+<text x="484" y="226" class="ink t-node">Rate floor</text>
+<text x="484" y="243" class="muted t-meta">a tax on your home always</text>
+<text x="484" y="256" class="muted t-meta">counts — no model vote</text>
+
+<rect x="472" y="272" width="164" height="24" rx="6" class="panel"/>
+<text x="554" y="289" class="muted t-meta" text-anchor="middle">recall 0.973 · spread ÷11</text>
+
+<rect x="472" y="306" width="164" height="24" rx="6" class="panel"/>
+<text x="554" y="323" class="muted t-meta" text-anchor="middle">no candidates → archive, $0</text>
+
+<!-- ZONE: reasoning -->
+<rect x="680" y="86" width="196" height="256" rx="10" class="zone"/>
+<text x="696" y="108" class="muted t-zone">REASONING</text>
+
+<rect x="696" y="120" width="164" height="70" rx="7" class="deep"/>
+<text x="708" y="140" class="ink t-node">Deep read</text>
+<text x="708" y="157" class="muted t-meta">Claude Sonnet 4.5</text>
+<text x="708" y="171" class="muted t-meta">survivors only · alerts keyed</text>
+<text x="708" y="184" class="muted t-meta">to decisions, not items</text>
+
+<rect x="696" y="200" width="164" height="66" rx="7" class="deep"/>
+<text x="708" y="220" class="ink t-node">Investigation team</text>
+<text x="708" y="237" class="muted t-meta">Swarm, composed by item type</text>
+<text x="708" y="250" class="muted t-meta">204 → 113 agent-runs</text>
+<text x="708" y="263" class="muted t-meta">ceremonial → no team</text>
+
+<rect x="696" y="276" width="164" height="54" rx="7" class="free"/>
+<text x="708" y="296" class="ink t-node">Arithmetic in code</text>
+<text x="708" y="313" class="muted t-meta">$2,199.92 across 13 items</text>
+<text x="708" y="326" class="muted t-meta">model quotes, never computes</text>
+
+<!-- ZONE: action -->
+<rect x="24" y="452" width="852" height="150" rx="10" class="zone"/>
+<text x="40" y="474" class="muted t-zone">BOUNDED ACTION — THE MODEL CANNOT GRANT ITSELF PERMISSION</text>
+
+<rect x="40" y="490" width="150" height="66" rx="7" class="deep"/>
+<text x="52" y="510" class="ink t-node">Draft</text>
+<text x="52" y="527" class="muted t-meta">Sonnet · verbatim quotes</text>
+<text x="52" y="540" class="muted t-meta">page citation required</text>
+
+<rect x="214" y="490" width="150" height="66" rx="7" class="free"/>
+<text x="226" y="510" class="ink t-node">Grounding check</text>
+<text x="226" y="527" class="muted t-meta">code, not prompting</text>
+<text x="226" y="540" class="muted t-meta">fabricated quote → blocked</text>
+
+<rect x="388" y="490" width="150" height="66" rx="7" class="panel"/>
+<text x="400" y="510" class="ink t-node">⟨ Interrupt ⟩</text>
+<text x="400" y="527" class="muted t-meta">human approval</text>
+<text x="400" y="540" class="muted t-meta">survives process death</text>
+
+<rect x="562" y="490" width="150" height="66" rx="7" class="gate"/>
+<text x="574" y="510" class="ink t-node">Cedar policy</text>
+<text x="574" y="527" class="muted t-meta">real engine, outside code</text>
+<text x="574" y="540" class="muted t-meta">deny by default</text>
+
+<rect x="736" y="490" width="140" height="66" rx="7" class="gate"/>
+<text x="748" y="510" class="ink t-node">⛔ Refused</text>
+<text x="748" y="527" class="muted t-meta">no standing in this</text>
+<text x="748" y="540" class="muted t-meta">jurisdiction → not filed</text>
+
+<!-- ZONE: verify -->
+<rect x="900" y="86" width="116" height="516" rx="10" class="zone"/>
+<text x="916" y="108" class="muted t-zone">VERIFY</text>
+<rect x="916" y="120" width="84" height="86" rx="7" class="free"/>
+<text x="928" y="140" class="ink t-node">Outcome</text>
+<text x="928" y="157" class="muted t-meta">51/51 items</text>
+<text x="928" y="170" class="muted t-meta">adopted /</text>
+<text x="928" y="183" class="muted t-meta">continued /</text>
+<text x="928" y="196" class="muted t-meta">referred</text>
+<rect x="916" y="216" width="84" height="72" rx="7" class="panel"/>
+<text x="928" y="236" class="ink t-node">Ledger</text>
+<text x="928" y="253" class="muted t-meta">what you</text>
+<text x="928" y="266" class="muted t-meta">asked for,</text>
+<text x="928" y="279" class="muted t-meta">what happened</text>
+
+<!-- AgentCore band -->
+<rect x="24" y="622" width="992" height="52" rx="10" class="panel"/>
+<text x="44" y="644" class="ink t-node">Amazon Bedrock AgentCore</text>
+<text x="44" y="662" class="muted t-meta">Runtime (CodeZip, Python 3.14) · Memory: semantic, user-preference, summarisation, episodic · deployed, invoked against a real packet, verified, torn down</text>
+
+<!-- EDGES -->
+<path d="M184 143 L238 143" class="edge" marker-end="url(#a)"/>
+<path d="M328 172 L328 176" class="edge" marker-end="url(#a)"/>
+<path d="M328 234 L328 240" class="edge" marker-end="url(#a)"/>
+<path d="M412 208 L432 208 L432 400 L238 400" class="edge-err" marker-end="url(#ae)"/>
+<text x="440" y="424" class="muted t-edge">error edge: &gt;25% image-only pages</text>
+<path d="M412 270 L466 270 L466 176" class="edge" marker-end="url(#a)"/>
+<path d="M412 318 L446 318 L446 234 L466 234" class="edge" marker-end="url(#a)"/>
+<path d="M636 148 L690 148" class="edge" marker-end="url(#a)"/>
+<path d="M636 234 L660 234 L660 160 L690 160" class="edge" marker-end="url(#a)"/>
+<path d="M778 330 L778 400 L115 400 L115 486" class="edge" marker-end="url(#a)"/>
+<path d="M190 523 L208 523" class="edge" marker-end="url(#a)"/>
+<path d="M364 523 L382 523" class="edge" marker-end="url(#a)"/>
+<path d="M538 523 L556 523" class="edge" marker-end="url(#a)"/>
+<path d="M712 523 L730 523" class="edge" marker-end="url(#a)"/>
+<path d="M184 199 L206 199 L206 344 L958 344 L958 214" class="edge" marker-end="url(#a)"/>
+<path d="M958 288 L958 430 L466 430" class="edge-loop" marker-end="url(#al)"/>
+<text x="474" y="448" class="muted t-edge">tracked across meetings — the same decision returns renumbered</text>
+
+<!-- LEGEND -->
+<rect x="24" y="690" width="14" height="12" rx="3" class="free"/>
+<text x="44" y="700" class="muted t-meta">deterministic, $0</text>
+<rect x="176" y="690" width="14" height="12" rx="3" class="cheap"/>
+<text x="196" y="700" class="muted t-meta">Nova Lite</text>
+<rect x="288" y="690" width="14" height="12" rx="3" class="deep"/>
+<text x="308" y="700" class="muted t-meta">Claude Sonnet / Haiku</text>
+<rect x="464" y="690" width="14" height="12" rx="3" class="gate"/>
+<text x="484" y="700" class="muted t-meta">halt or refuse</text>
+<text x="596" y="700" class="muted t-meta">solid = flow &#183; dashed red = error edge &#183; dotted green = tracked across meetings</text>
+</svg>

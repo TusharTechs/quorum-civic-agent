@@ -1,3 +1,5 @@
+<img src="assets/logo-wordmark.svg" alt="QUORUM" width="380">
+
 # QUORUM
 
 > Your city publishes hundreds of pages a week. QUORUM reads all of it, and
@@ -99,6 +101,8 @@ OUTCOME    comment prepared, not filed
 
 Built on the [Strands Agents SDK](https://strandsagents.com). The `Graph` is the
 lifecycle coordinator; there is no supervisor agent layered on top of it.
+
+![QUORUM architecture: a Strands Graph from watching published packets through to verifying outcomes, showing which stages are deterministic and which call a model](assets/architecture.svg)
 
 ```
 watch -> ingest -> segment -> triage --(candidates)--> deep_read -> diff -> draft
