@@ -33,3 +33,6 @@ deploy/agentcore/.env.local
 deploy/agentcore/.cli/
 deploy/agentcore/cdk/cdk.out/
 deploy/agentcore/cdk/node_modules/
+
+# generated report output
+data/report.html
