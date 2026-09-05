@@ -1,0 +1,36 @@
+{
+  "meeting": "2026-06-30",
+  "jurisdiction": "Berkeley, California",
+  "profile": "config/household.json",
+  "labelled_by": "hand-labelled by the author, one pass, 2026-09-05",
+  "criterion": "An item is RELEVANT if it changes something concrete for this household's money, property, movement, or a stated interest, as a result of this meeting. Anticipated or indirect effects are marked BORDERLINE rather than counted, so the headline figures do not depend on debatable calls.",
+  "known_bias": "The labeller also wrote the system under test. Borderline items are reported separately for exactly this reason, and every label carries its rationale so a specific call can be disputed without discarding the whole set.",
+  "relevant": {
+    "1": "Parking meter hours extended to 8pm, Sunday enforcement, meter zones expanded. Household has street parking only, no driveway, one vehicle.",
+    "2": "Library Relief Act special tax, $0.06297/sq ft on dwelling units. Levied on this home.",
+    "3": "Library Services special tax, $0.31280/sq ft on dwelling units. Levied on this home.",
+    "5": "Debt service on 2015 refunding GO bonds, 0.0075% of assessed value. Levied on this property.",
+    "6": "Affordable Housing GO bonds (Measure O), 0.0200% of assessed value. Levied on this property.",
+    "7": "Emergency services for the severely disabled (Measure E), $0.02339/sq ft of improvements.",
+    "8": "Fire protection and emergency response (Measure GG), $0.07026/sq ft on dwelling units.",
+    "9": "Firefighting and wildfire prevention (Measure FF), $0.13633/sq ft of improvements.",
+    "10": "Paramedic tax, $0.04920/sq ft of improvements.",
+    "11": "Infrastructure GO bonds (Measure T1), 0.0140% of assessed value.",
+    "12": "Parks, city trees and landscaping, $0.27830/sq ft. Also a stated interest.",
+    "13": "Neighborhood branch library GO bonds, 0.0035% of assessed value.",
+    "14": "SAFE STREETS (Measure FF), $0.17842/sq ft of dwelling improvements. Also a stated interest: street safety near the school route.",
+    "15": "Street and watershed improvements GO bonds (Measure M), 0.0040% of assessed value.",
+    "17": "Half-percent sales tax increase placed on the November 2026 ballot, taking the aggregate rate to 10.75%. Household purchases in the city."
+  },
+  "borderline": {
+    "29": "North Berkeley BART affordable housing predevelopment funding. Matches the stated interest in nearby housing development, but this item funds predevelopment only and changes nothing this week.",
+    "40": "Position of support for California SB 1383 (density bonus). A state-legislation position, not a local land-use decision; no direct effect on this household now.",
+    "46": "Surveillance use policies for community video streams and investigative software, adopted citywide. Plausibly affects movement and privacy on residential streets, but no camera is sited by this action.",
+    "20": "Transportation network company user tax. Applies only if the household uses ride-hailing, which the profile does not state."
+  },
+  "not_relevant_notable": {
+    "4": "Business licence tax on large non-profits, $0.9168/sq ft. Phrased almost identically to the dwelling rates and is the largest of them. A system that counts this is wrong, not thorough.",
+    "45": "Rent stabilisation initiative ordinance. This household are owners, not renters or landlords.",
+    "34": "Cedar Rose Park playground renovation. Parks are a stated interest, but this park is not in the household's district."
+  }
+}

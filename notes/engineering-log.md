@@ -677,3 +677,68 @@ user-facing copy — it still infers (it described cameras as possibly deployed 
 a specific street, which the text does not say) and it mislabelled the
 procedural stage. User-facing alerts continue to come from the grounded path
 with verified arithmetic and cited quotes.
+
+---
+
+## 16. Evaluation: a measured claim, not an asserted one
+
+`src/quorum/evaluate.py`, ground truth in `eval/labels_2026-06-30.json`.
+
+15 of 51 items are hand-labelled relevant to the demo household, each with its
+rationale recorded so a specific call can be disputed without discarding the
+set. 4 further items are marked **borderline** and excluded from scoring
+entirely — they count neither for nor against — because the headline number
+should not depend on debatable judgements.
+
+The labeller also wrote the system under test. That is stated in the label file
+rather than hidden; borderline items exist precisely to blunt it.
+
+### Result over 5 trials on identical input
+
+| | model triage alone | + deterministic rate floor |
+|---|---|---|
+| precision (mean) | 1.000 | 1.000 |
+| recall (mean) | 0.787 | **0.973** |
+| recall (range) | **0.267 – 1.000** | 0.933 – 1.000 |
+| recall spread | **0.733** | **0.067** |
+| f1 (mean) | 0.844 | 0.986 |
+
+Cost of the whole evaluation: **$0.0034**.
+
+### The finding is the variance, not the mean
+Two of the five trials scored a perfect 1.000 recall. **A single run would have
+reported 1.000/1.000 and been worthless as evidence.** The same prompt, the same
+packet and the same model produced:
+
+    trial 1  recall 1.000   missed nothing
+    trial 2  recall 1.000   missed nothing
+    trial 3  recall 0.667   missed items 7, 12, 13, 15, 17
+    trial 4  recall 1.000   missed nothing
+    trial 5  recall 0.267   missed items 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 17
+
+In trial 5 the model found 4 of 15 relevant items, having overlooked eleven
+taxes levied on this household's own home. Any of these runs, shown alone, would
+have looked like a working system.
+
+The deterministic rate floor reduces recall spread by a factor of eleven and
+lifts worst-case recall from 0.267 to 0.933.
+
+### Precision is 1.000 and that is not a triumph
+The triage prompt instructs the model to be strict, and it is: it never
+surfaced an item the key calls irrelevant. But precision this clean across all
+runs suggests the model is under-selecting rather than judging well — which is
+the same behaviour that produces the recall collapse. Precision at 1.000 and
+recall at 0.267 in the same trial is one failure, not two metrics.
+
+### What the floor still does not cover
+The residual miss is **item 17**, the sales-tax ballot measure. It is not a
+property rate, so the rate floor does not reach it, and the model catches it
+only sometimes. Extending the deterministic floor to ballot measures that levy
+a tax is the obvious next mitigation.
+
+### Honest limits
+- One meeting, one household profile, one labeller.
+- Five trials is enough to expose the variance, not enough to characterise its
+  distribution.
+- Scoring is item-level relevance. It does not measure whether the resulting
+  alert was *good* — only whether the right item reached it.
