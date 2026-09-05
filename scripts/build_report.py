@@ -38,6 +38,11 @@ annotated = json.loads(
 flagged = {n for a in ctx.alerts.alerts for n in a.item_numbers} if ctx.alerts else set()
 outcomes = {n: o for n, o in load_outcomes(annotated).items() if n in flagged}
 
-out = write(ctx, Path("data/report.html"), decision=decision, grounding=grounding,
-            outcomes=outcomes, annotated_url=ANNOTATED_URL)
-print(f"wrote {out} ({out.stat().st_size:,} bytes, self-contained)")
+kwargs = dict(decision=decision, grounding=grounding,
+              outcomes=outcomes, annotated_url=ANNOTATED_URL)
+
+# data/report.html is the working copy; web/index.html is the committed snapshot
+# that gets served as a static site. No build step, no secrets, no runtime.
+for target in (Path("data/report.html"), Path("web/index.html")):
+    out = write(ctx, target, **kwargs)
+    print(f"wrote {out} ({out.stat().st_size:,} bytes, self-contained)")

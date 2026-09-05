@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why QUORUM interrupted you &mdash; Tuesday, 30 June 2026</title>
+<style>
+:root {
+  --bg: #f6f5f2; --panel: #ffffff; --ink: #16181d; --muted: #5b6472;
+  --line: #e2e0da; --accent: #1c4f8a; --warn: #8a4b1c; --stop: #8a1c2f;
+  --ok: #1c6b45; --code: #f0efeb;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14161a; --panel: #1b1e24; --ink: #e8e9ec; --muted: #9aa3b0;
+    --line: #2b3038; --accent: #7fb0e8; --warn: #d9a06a; --stop: #e88b98;
+    --ok: #6fc79c; --code: #23272e;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14161a; --panel: #1b1e24; --ink: #e8e9ec; --muted: #9aa3b0;
+  --line: #2b3038; --accent: #7fb0e8; --warn: #d9a06a; --stop: #e88b98;
+  --ok: #6fc79c; --code: #23272e;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+.wrap { max-width: 860px; margin: 0 auto; padding: 40px 22px 80px; }
+header { border-bottom: 2px solid var(--ink); padding-bottom: 14px; margin-bottom: 28px; }
+.brand { font-size: 13px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 4px; letter-spacing: -.01em; }
+.sub { color: var(--muted); font-size: 15px; }
+.funnel {
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  padding: 14px 16px; margin: 0 0 30px; font-size: 14px;
+}
+.funnel b { font-size: 19px; font-variant-numeric: tabular-nums; }
+.funnel .step { display: flex; align-items: baseline; gap: 7px; }
+.funnel .arrow { color: var(--muted); padding: 0 4px; }
+.card {
+  background: var(--panel); border: 1px solid var(--line);
+  border-left: 4px solid var(--accent); border-radius: 10px;
+  padding: 20px 22px; margin: 0 0 18px;
+}
+.card h2 { font-size: 19px; margin: 0 0 14px; line-height: 1.35; }
+.tag {
+  display: inline-block; font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--muted); border: 1px solid var(--line); border-radius: 999px;
+  padding: 2px 9px; margin-bottom: 10px;
+}
+dl { margin: 0; display: grid; grid-template-columns: 88px 1fr; gap: 9px 16px; }
+dt { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); padding-top: 3px; }
+dd { margin: 0; }
+blockquote {
+  margin: 0; padding: 10px 14px; background: var(--code);
+  border-radius: 6px; font-size: 14.5px;
+}
+a { color: var(--accent); }
+.cite { display: inline-block; margin-top: 8px; font-size: 13px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 6px; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); }
+th { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tr.total td { font-weight: 700; border-top: 2px solid var(--ink); border-bottom: none; }
+tr.excluded td { color: var(--muted); }
+.scroll { overflow-x: auto; }
+h3 { font-size: 15px; margin: 30px 0 10px; letter-spacing: .02em; }
+.gate { border-left-color: var(--stop); }
+.gate .verdict { color: var(--stop); font-weight: 700; font-size: 17px; }
+.gate ul { margin: 10px 0 0; padding-left: 20px; }
+.quiet { color: var(--muted); font-size: 14px; }
+.pill { font-size: 12px; padding: 2px 8px; border-radius: 5px; background: var(--code); }
+.pill.ok { color: var(--ok); }
+footer { margin-top: 46px; padding-top: 16px; border-top: 1px solid var(--line);
+         color: var(--muted); font-size: 13px; }
+</style>
+</head><body><div class="wrap">
+  <header>
+    <div class="brand">QUORUM</div>
+    <h1>Why QUORUM interrupted you</h1>
+    <p class="sub">Berkeley, California &middot; Tuesday, 30 June 2026 &middot;
+      read while you were asleep, unprompted</p>
+  </header>
+  <div class="funnel"><span class="step"><b>1,790</b> pages</span><span class="arrow">&rarr;</span><span class="step"><b>51</b> agenda items</span><span class="arrow">&rarr;</span><span class="step"><b>14</b> candidates</span><span class="arrow">&rarr;</span><span class="step"><b>2</b> decisions</span></div>
+  
+    <article class="card">
+      <span class="tag">Agenda items 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15</span>
+      <h2>The council is setting 13 separate property tax rates for FY 2027 to fund libraries, fire services, paramedics, parks and street trees, affordable housing bonds, street improvements, and other city services</h2>
+      <dl>
+        <dt>Why you</dt><dd>Your household at 1600 block Hopkins Street will pay $2,199.92 per year total across these 13 taxes—$1,611.92 based on your 1,450 square feet of dwelling space and $588.00 based on your $1,200,000 assessed value</dd>
+        <dt>Why now</dt><dd>These are annual tax rates being set for the fiscal year 2027</dd>
+        <dt>Evidence</dt><dd>
+          <blockquote>&ldquo;$0.06297 (6.297 cents) per square foot for dwelling units... $0.3128 (31.28 cents) per square foot for dwelling units... $0.02339 (2.339 cents) per square foot of improvements... $0.07026 (7.026 cents) per square foot of improvements for dwelling units... $0.13633 (13.633 cents) per square foot of improvements... $0.0492 (4.92 cents) per square foot of improvements... $0.2783 (27.83 cents) per square foot of improvements... $0.17842 per square foot of dwelling unit improvements... 0.0075%... 0.0200%... 0.0140%... 0.0035%... 0.0040%&rdquo;</blockquote>
+          <a class="cite" href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Agenda%20Packet%20-%20Council%20-%20WEB.pdf#page=4">Open the packet at page 4 &rarr;</a>
+        </dd>
+      </dl>
+    </article>
+    <article class="card">
+      <span class="tag">Agenda item 1</span>
+      <h2>The council is extending parking meter hours to 8 p.m. citywide, operating meters and enforcement on Sundays, expanding meter zones to new high-demand areas, and authorizing a future transition to cashless meters</h2>
+      <dl>
+        <dt>Why you</dt><dd>Your household has one vehicle with street parking only and no driveway, so you will face meter fees and enforcement during new evening and Sunday hours whenever you park on metered streets, and new meter zones may be established on nearby blocks</dd>
+        <dt>Why now</dt><dd>This is the second reading of the ordinance and will take effect upon adoption</dd>
+        <dt>Evidence</dt><dd>
+          <blockquote>&ldquo;Extend parking meter operating hours to 8 p.m. citywide. b. Operate parking meters, pay stations, and parking enforcement on Sundays. c. Expand meter zones to new high-demand areas. d. Authorize a transition to cashless parking meters and/or pay stations in the future.&rdquo;</blockquote>
+          <a class="cite" href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Agenda%20Packet%20-%20Council%20-%20WEB.pdf#page=3">Open the packet at page 3 &rarr;</a>
+        </dd>
+      </dl>
+    </article>
+  
+    <h3>What this meeting costs this household</h3>
+    <div class="card">
+      <p class="quiet">1,450 sq ft, assessed
+        $1,200,000. Computed in code from the published rates,
+        not estimated.</p>
+      <div class="scroll"><table>
+        <thead><tr><th>Source</th><th>Instrument</th><th class="num">Rate</th>
+        <th class="num">Per year</th></tr></thead>
+        <tbody><tr><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Agenda%20Packet%20-%20Council%20-%20WEB.pdf#page=4">Item 2</a></td><td>8,013-N.S.</td><td class="num">$0.06297/sq ft</td><td class="num">$91.31</td></tr><tr><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Agenda%20Packet%20-%20Council%20-%20WEB.pdf#page=4">Item 3</a></td><td>8,014-N.S.</td><td class="num">$0.31280/sq ft</td><td class="num">$453.56</td></tr><tr><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Agenda%20Packet%20-%20Council%20-%20WEB.pdf#page=5">Item 7</a></td><td>8,018-N.S.</td><td class="num">$0.02339/sq ft</td><td class="num">$33.92</td></tr><tr><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Agenda%20Packet%20-%20Council%20-%20WEB.pdf#page=5">Item 8</a></td><td>8,019-N.S.</td><td class="num">$0.07026/sq ft</td><td class="num">$101.88</td></tr><tr><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Agenda%20Packet%20-%20Council%20-%20WEB.pdf#page=5">Item 9</a></td><td>8,020-N.S.</td><td class="num">$0.13633/sq ft</td><td class="num">$197.68</td></tr><tr><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Agenda%20Packet%20-%20Council%20-%20WEB.pdf#page=6">Item 10</a></td><td>8,021-N.S.</td><td class="num">$0.04920/sq ft</td><td class="num">$71.34</td></tr><tr><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Agenda%20Packet%20-%20Council%20-%20WEB.pdf#page=6">Item 12</a></td><td>8,023-N.S.</td><td class="num">$0.27830/sq ft</td><td class="num">$403.53</td></tr><tr><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Agenda%20Packet%20-%20Council%20-%20WEB.pdf#page=7">Item 14</a></td><td>8,025-N.S.</td><td class="num">$0.17842/sq ft</td><td class="num">$258.71</td></tr><tr><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Agenda%20Packet%20-%20Council%20-%20WEB.pdf#page=4">Item 5</a></td><td>8,016-N.S.</td><td class="num">0.0075% of value</td><td class="num">$90.00</td></tr><tr><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Agenda%20Packet%20-%20Council%20-%20WEB.pdf#page=5">Item 6</a></td><td>8,017-N.S.</td><td class="num">0.0200% of value</td><td class="num">$240.00</td></tr><tr><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Agenda%20Packet%20-%20Council%20-%20WEB.pdf#page=6">Item 11</a></td><td>8,022-N.S.</td><td class="num">0.0140% of value</td><td class="num">$168.00</td></tr><tr><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Agenda%20Packet%20-%20Council%20-%20WEB.pdf#page=6">Item 13</a></td><td>8,024-N.S.</td><td class="num">0.0035% of value</td><td class="num">$42.00</td></tr><tr><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Agenda%20Packet%20-%20Council%20-%20WEB.pdf#page=7">Item 15</a></td><td>8,026-N.S.</td><td class="num">0.0040% of value</td><td class="num">$48.00</td></tr><tr class="excluded"><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Agenda%20Packet%20-%20Council%20-%20WEB.pdf#page=4">Item 4</a></td><td colspan="2">Excluded &mdash; applies to large non-profits, not dwellings</td><td class="num">&mdash;</td></tr><tr class="excluded"><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Agenda%20Packet%20-%20Council%20-%20WEB.pdf#page=8">Item 20</a></td><td colspan="2">Excluded &mdash; charged per ride, not on property</td><td class="num">&mdash;</td></tr><tr class="total"><td colspan="3">Annual total across 13 agenda items</td><td class="num">$2,199.92</td></tr></tbody>
+      </table></div>
+      <p class="quiet">Adding every rate that says &ldquo;per square foot&rdquo;
+        would give $3,529.28 &mdash; overstating this household by
+        <strong>$1,329.36 a year</strong>.</p>
+    </div>
+  
+    <h3>The comment QUORUM prepared, and did not send</h3>
+    <div class="card gate">
+      <p class="verdict">&#9940; Blocked by Civic Integrity Policy</p>
+      <ul><li>the configured identity has no verified standing in this jurisdiction</li></ul>
+      <p class="quiet">Grounding check: <span class="pill ok">3/3 quotes verified</span> <span class="pill ok">0 uncited claims</span></p>
+      <p class="quiet">The comment is drafted, cited and human-approved. It was
+        still refused, because the configured identity has no standing in this
+        jurisdiction. The model can recommend an action; it cannot grant itself
+        permission to take one &mdash; including when the operator is us.</p>
+    </div>
+  
+    <h3>What the council actually did</h3>
+    <div class="card">
+      <div class="scroll"><table>
+        <thead><tr><th>Item</th><th>Outcome</th><th>Record</th></tr></thead>
+        <tbody><tr><td>Item 1</td><td>Adopted — Ordinance 8,012-N.S.</td><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Annotated%20Agenda%20-%20Council.pdf#page=3">page 3</a></td></tr><tr><td>Item 2</td><td>Adopted — Ordinance 8,013-N.S.</td><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Annotated%20Agenda%20-%20Council.pdf#page=3">page 3</a></td></tr><tr><td>Item 3</td><td>Adopted — Ordinance 8,014-N.S.</td><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Annotated%20Agenda%20-%20Council.pdf#page=3">page 3</a></td></tr><tr><td>Item 5</td><td>Adopted — Ordinance 8,016-N.S.</td><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Annotated%20Agenda%20-%20Council.pdf#page=4">page 4</a></td></tr><tr><td>Item 6</td><td>Adopted — Ordinance 8,017-N.S.</td><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Annotated%20Agenda%20-%20Council.pdf#page=4">page 4</a></td></tr><tr><td>Item 7</td><td>Adopted — Ordinance 8,018-N.S.</td><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Annotated%20Agenda%20-%20Council.pdf#page=4">page 4</a></td></tr><tr><td>Item 8</td><td>Adopted — Ordinance 8,019-N.S.</td><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Annotated%20Agenda%20-%20Council.pdf#page=5">page 5</a></td></tr><tr><td>Item 9</td><td>Adopted — Ordinance 8,020-N.S.</td><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Annotated%20Agenda%20-%20Council.pdf#page=5">page 5</a></td></tr><tr><td>Item 10</td><td>Adopted — Ordinance 8,021-N.S.</td><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Annotated%20Agenda%20-%20Council.pdf#page=5">page 5</a></td></tr><tr><td>Item 11</td><td>Adopted — Ordinance 8,022-N.S.</td><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Annotated%20Agenda%20-%20Council.pdf#page=6">page 6</a></td></tr><tr><td>Item 12</td><td>Adopted — Ordinance 8,023-N.S.</td><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Annotated%20Agenda%20-%20Council.pdf#page=6">page 6</a></td></tr><tr><td>Item 13</td><td>Adopted — Ordinance 8,024-N.S.</td><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Annotated%20Agenda%20-%20Council.pdf#page=6">page 6</a></td></tr><tr><td>Item 14</td><td>Adopted — Ordinance 8,025-N.S.</td><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Annotated%20Agenda%20-%20Council.pdf#page=7">page 7</a></td></tr><tr><td>Item 15</td><td>Adopted — Ordinance 8,026-N.S.</td><td><a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Annotated%20Agenda%20-%20Council.pdf#page=7">page 7</a></td></tr></tbody>
+      </table></div>
+      <p class="quiet">Read from the published Annotated Agenda after the
+        meeting. The loop closes: flagged, acted on, verified.</p>
+    </div>
+  <footer>
+    Every figure on this page was computed from the published packet at
+    <a href="https://berkeleyca.gov/sites/default/files/city-council-meetings/2026-06-30%20Agenda%20Packet%20-%20Council%20-%20WEB.pdf">berkeleyca.gov</a> &mdash; 1,790 pages,
+    parsed once. Generated 05 September 2026, 16:58 UTC.
+  </footer>
+</div></body></html>
