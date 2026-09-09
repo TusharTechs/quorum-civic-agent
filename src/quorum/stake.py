@@ -14,13 +14,9 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field
 from strands import Agent
-from strands.models import BedrockModel
 
 from .household import describe
-
-REGION = "us-west-2"
-TRIAGE_MODEL = "us.amazon.nova-lite-v1:0"
-DEEP_MODEL = "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+from .models import DEEP, TRIAGE, get_model
 
 # Truncate each item for triage; the full text is only read for survivors.
 TRIAGE_CHARS = 600
@@ -57,10 +53,6 @@ class AlertSet(BaseModel):
     alerts: list[Alert]
 
 
-def _model(model_id: str) -> BedrockModel:
-    return BedrockModel(model_id=model_id, region_name=REGION)
-
-
 def triage(items: list[dict], profile: dict) -> tuple[TriageResult, dict]:
     """Cheap pass over every item. Returns (result, token usage)."""
     listing = "\n".join(
@@ -69,7 +61,7 @@ def triage(items: list[dict], profile: dict) -> tuple[TriageResult, dict]:
         for item in items
     )
     agent = Agent(
-        model=_model(TRIAGE_MODEL),
+        model=get_model(TRIAGE),
         system_prompt=(
             "You triage city council agenda items for one household. Be strict: "
             "most items affect nobody in particular. Mark affects_household true "
@@ -99,7 +91,7 @@ def build_alerts(
         for item in candidates
     )
     agent = Agent(
-        model=_model(DEEP_MODEL),
+        model=get_model(DEEP),
         system_prompt=(
             "You write the alert a resident reads. Four questions, in order: "
             "WHAT the council is deciding, WHY IT AFFECTS THIS HOUSEHOLD "

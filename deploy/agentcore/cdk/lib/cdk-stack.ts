@@ -125,6 +125,32 @@ export class AgentCoreStack extends Stack {
     }
     this.application = new AgentCoreApplication(this, 'Application', appProps as any);
 
+    // --- QUORUM: model provider for the deployed agent --------------------
+    // Read at synth time from the deploying machine. This repository is
+    // public, so no credential is ever written into it - the value comes from
+    // the shell running `agentcore deploy` and goes straight into the runtime.
+    //
+    // Bedrock is the default and needs nothing here. Set QUORUM_PROVIDER (and
+    // the matching key) before deploying to serve the model tiers elsewhere,
+    // while Runtime and Memory still run on AgentCore.
+    const quorumProvider = process.env.QUORUM_PROVIDER;
+    if (quorumProvider) {
+      const anthropicKey = process.env.ANTHROPIC_API_KEY;
+      if (quorumProvider === 'anthropic' && !anthropicKey) {
+        throw new Error(
+          'QUORUM_PROVIDER=anthropic but ANTHROPIC_API_KEY is not set. ' +
+            'Export it in the shell you deploy from - it is read at synth ' +
+            'time and is never committed to the repository.',
+        );
+      }
+      for (const agentEnv of this.application.environments.values()) {
+        agentEnv.runtime.addEnvironmentVariable('QUORUM_PROVIDER', quorumProvider);
+        if (anthropicKey) {
+          agentEnv.runtime.addEnvironmentVariable('ANTHROPIC_API_KEY', anthropicKey);
+        }
+      }
+    }
+
     // Create AgentCoreMcp if there are gateways configured
     if (mcpSpec?.agentCoreGateways && mcpSpec.agentCoreGateways.length > 0) {
       new AgentCoreMcp(this, 'Mcp', {

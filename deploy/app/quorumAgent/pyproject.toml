@@ -16,7 +16,15 @@ dependencies = [
     "strands-agents >= 1.15.0",
     # The pipeline itself. Installed from the public repository rather than
     # copied into this directory, so there is one source of truth.
-    "quorum @ git+https://github.com/TusharTechs/quorum-civic-agent@main",
+    # The quorum package is vendored into this directory by
+    # scripts/prepare_deploy.py before packaging - AgentCore's CodeZip build
+    # installs with source builds disabled, so a git+https dependency can never
+    # resolve. Its runtime dependencies are therefore declared here.
+    "anthropic >= 1.0",
+    "cedarpy >= 4.8",
+    "httpx >= 0.28",
+    "pydantic >= 2.10",
+    "pymupdf >= 1.26",
 ]
 
 [tool.hatch.build.targets.wheel]

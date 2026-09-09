@@ -5,6 +5,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
+from quorum import models                             # noqa: E402
 from quorum.pipeline import RunContext, build_graph   # noqa: E402
 
 PACKET_URL = (
@@ -29,10 +30,9 @@ if ctx.alerts:
         print(f"  items {a.item_numbers}: {a.what[:100]}")
 
 tokens = {k: (v["inputTokens"], v["outputTokens"]) for k, v in ctx.usage.items()}
-cost = sum(
-    (v["inputTokens"] * (0.06 if k == "triage" else 3.0)
-     + v["outputTokens"] * (0.24 if k == "triage" else 15.0)) / 1e6
-    for k, v in ctx.usage.items()
-)
+# Priced through the provider layer, so the figure stays true if the
+# provider changes underneath us.
+TIER = {"triage": models.TRIAGE, "deep": models.DEEP}
+cost = sum(models.cost(TIER[k], v) for k, v in ctx.usage.items() if k in TIER)
 print(f"\ntokens: {tokens}")
 print(f"estimated cost: ${cost:.4f}")

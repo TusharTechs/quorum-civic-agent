@@ -19,11 +19,9 @@ import re
 from dataclasses import dataclass
 
 from strands import Agent
-from strands.models import BedrockModel
 from strands.multiagent import Swarm
 
-REGION = "us-west-2"
-SPECIALIST_MODEL = "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+from .models import SPECIALIST, get_model
 
 # Ordered: the first pattern that matches wins, most specific first.
 ITEM_TYPES: list[tuple[str, re.Pattern]] = [
@@ -116,7 +114,7 @@ def _agent(key: str) -> Agent:
     name, brief = SPECIALISTS[key]
     return Agent(
         name=name,
-        model=BedrockModel(model_id=SPECIALIST_MODEL, region_name=REGION),
+        model=get_model(SPECIALIST),
         system_prompt=(
             f"You are the {name} specialist on a team reading one city council "
             f"agenda item.\n\n{brief}\n\n"

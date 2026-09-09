@@ -23,7 +23,12 @@ print(f"run: {len(ctx.items)} items -> {len(ctx.candidates)} candidates -> "
 
 # The prepared-but-refused comment, on the parking ordinance.
 items = {i["number"]: i for i in ctx.items}
-alert = next((a for a in ctx.alerts.alerts if 1 in a.item_numbers), None)
+# The run can legitimately produce no alerts — a quiet week, or an upstream
+# failure. Render the page either way rather than crashing on it.
+alerts = ctx.alerts.alerts if ctx.alerts else []
+if not alerts:
+    print("no alerts this run; rendering the no-action page")
+alert = next((a for a in alerts if 1 in a.item_numbers), None)
 decision = grounding = None
 if alert:
     draft = draft_comment(alert, items[1], ctx.profile, ctx.meeting_date)
@@ -35,7 +40,7 @@ if alert:
 
 annotated = json.loads(
     Path("data/cache/items_2026-06-30-ANNOTATED.json").read_text(encoding="utf-8"))
-flagged = {n for a in ctx.alerts.alerts for n in a.item_numbers} if ctx.alerts else set()
+flagged = {n for a in alerts for n in a.item_numbers}
 outcomes = {n: o for n, o in load_outcomes(annotated).items() if n in flagged}
 
 kwargs = dict(decision=decision, grounding=grounding,

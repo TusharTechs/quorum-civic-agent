@@ -20,6 +20,10 @@ dependencies = [
 
 [project.optional-dependencies]
 tools = ["strands-agents-tools>=0.8"]
+# Provider fallbacks. Bedrock needs nothing extra; these are for when it is
+# unavailable. See src/quorum/models.py.
+anthropic = ["anthropic>=1.0"]
+ollama = ["ollama>=0.4"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/quorum"]

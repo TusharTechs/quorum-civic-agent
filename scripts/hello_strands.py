@@ -1,14 +1,22 @@
-"""Smoke test: validates AWS credentials, region and Bedrock model access
-through Strands in a single call. Uses Haiku to keep the cost negligible."""
+"""Smoke test: validates credentials, provider config and model access in one
+call. Uses the cheap tier, so it costs a fraction of a cent whoever is serving.
+"""
 
-from strands import Agent
-from strands.models import BedrockModel
+import sys
+from pathlib import Path
 
-MODEL_ID = "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-model = BedrockModel(model_id=MODEL_ID, region_name="us-west-2")
-agent = Agent(model=model, system_prompt="Answer in one short sentence.")
+from strands import Agent          # noqa: E402
+from quorum import models          # noqa: E402
 
+print(models.describe())
+
+agent = Agent(model=models.get_model(models.SPECIALIST),
+              system_prompt="Answer in one short sentence.")
 result = agent("What is a city council agenda packet?")
+
+usage = result.metrics.accumulated_usage
 print("\n--- usage ---")
-print(result.metrics.accumulated_usage)
+print(usage)
+print(f"cost: ${models.cost(models.SPECIALIST, usage):.5f}")

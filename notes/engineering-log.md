@@ -742,3 +742,125 @@ a tax is the obvious next mitigation.
   distribution.
 - Scoring is item-level relevance. It does not measure whether the resulting
   alert was *good* — only whether the right item reached it.
+
+---
+
+## 17. Removing the single-provider dependency
+
+On 9 September 2026, mid-session, Bedrock access to this account was withdrawn:
+
+    ValidationException - Error 002: Access to Bedrock models is not allowed
+    for this account
+
+Not model-specific, not regional, not transient. All three models failed in
+both us-west-2 and us-east-1 across repeated retries, while the Bedrock control
+plane kept working (ListFoundationModels returned 116 models) and the Anthropic
+use case form remained on file. Invocations had succeeded minutes earlier in the
+same session with no configuration change.
+
+AWS Support escalated to the Bedrock service team, whose position was that model
+access depends on "regional factors, payment history, and account usage", and
+that an account with minimal usage must "build historical data" before access is
+granted. That criterion cannot be satisfied from a standing start: there is no
+path from zero access to more usage.
+
+### The fix is architectural, not procedural
+`src/quorum/models.py` replaces four hardcoded `BedrockModel` constructions with
+a tier-based provider layer. The pipeline reasons in three tiers - **triage**,
+**deep**, **specialist** - and no longer names a vendor anywhere:
+
+| `QUORUM_PROVIDER` | triage | deep | specialist |
+|---|---|---|---|
+| `bedrock` (default) | Nova Lite | Claude Sonnet 4.5 | Claude Haiku 4.5 |
+| `anthropic` | Claude Haiku 4.5 | Claude Sonnet 5 | Claude Haiku 4.5 |
+| `ollama` | llama3.2 | llama3.1:8b | llama3.2 |
+
+Per-tier pricing moved into the same module, so the cost printed at the end of a
+run stays truthful when the provider changes - $0.0007 for a triage pass on
+Bedrock, $0.0126 for the same pass on the Anthropic API, because Nova Lite has
+no equivalent in Anthropic's line-up.
+
+Verified: both provider paths construct, an unknown provider is rejected with
+the valid options listed, and no `BedrockModel`, region constant or raw model id
+remains anywhere in `src/quorum` outside `models.py`.
+
+### Why this belongs in the project regardless
+Nothing about the default behaviour changed. But a pipeline whose only model
+provider can withdraw access without notice is one outage away from being
+undemonstrable, and "routed by cost, provider-swappable" is a stronger claim
+than "hardcoded to one vendor". The outage forced a design improvement that
+should have been there anyway.
+
+### Also fixed
+`build_report.py` crashed with an `AttributeError` when a run produced no
+alerts, which is exactly what happens during a provider outage. It now renders
+the "no action recommended" page instead - the same page a genuinely quiet week
+produces.
+
+### What the provider swap exposed
+
+Running the same pipeline on a different provider surfaced two defects that had
+been invisible on Bedrock.
+
+**1. The drafting model paraphrased inside quotation marks.** Claude Sonnet 5
+tidied and joined spans while still wrapping them in quotes; only 1 of 4 "quotes"
+was verbatim. The grounding check caught every one - working exactly as designed -
+but the draft was then blocked on grounding as well as standing, which muddies
+the demo beat. The prompt said "quote it verbatim" without forbidding the
+failure mode, so it now says: anything inside double quotes must be copied
+character for character, and if you cannot copy a span exactly, describe it with
+no quote marks. Verbatim rate went to 3/3, 3/3, 4/4, 5/5 across runs.
+
+**2. The first-person exemption was dead code.** The rule read
+`FIRST_PERSON.match(s) and not PACKET_CLAIM.search(s)`, so a sentence like
+
+> "My household has no driveway and relies entirely on street parking, so the
+> proposed change directly affects us."
+
+was demanded a packet citation, because "the proposed" matches PACKET_CLAIM. That
+is how residents actually write - *my situation is X, so the proposal does Y to
+me* - so the exemption never fired in the case it existed for. A first-person
+sentence is now exempt outright; one that quotes the packet is already caught by
+the earlier quotation check. All three negative controls still pass.
+
+After both fixes the refusal rests on standing alone in six runs out of seven -
+the draft is fully grounded, a human approved it, and it is still refused.
+
+**The general lesson:** neither bug was reachable on the provider the code was
+written against. Swapping providers is a cheap way to find prompt rules that
+depend on one model's habits rather than on what the rule actually says.
+
+### Deploying without Bedrock: two things that only appear at deploy time
+
+**The git dependency could never have installed.** The app declared
+`quorum @ git+https://github.com/.../quorum-civic-agent@main`, which looked
+correct and passed `agentcore validate`. It fails at synth:
+
+    error: Failed to prepare distributions
+      Caused by: Building source distributions is disabled, but attempted to
+      build `quorum`
+
+AgentCore's CodeZip build installs with source builds disabled, so a git
+dependency is unresolvable. This was invisible because the successful 5 Sept
+deployment predates the dependency - it had never been deploy-tested.
+`scripts/prepare_deploy.py` now vendors `src/quorum` (plus the Cedar policy and
+household profile as package data) into the app directory before packaging.
+`src/` stays the single source of truth; the copy is gitignored and regenerated
+on every deploy.
+
+**The runtime takes environment variables**, via `addEnvironmentVariable` on the
+CDK stack, read from `process.env` at synth time. That makes a hybrid possible:
+Runtime and Memory on AgentCore, model tiers served by whichever provider is
+reachable. `QUORUM_PROVIDER=anthropic` reaches the synthesized template;
+`cdk.out` is gitignored so no credential enters the repository, and the value is
+supplied by the shell that runs the deploy.
+
+Confirmed by dry run against the real account.
+
+### Architecture diagram: the requirement that was missed
+The hackathon guidance asks a diagram to show "how a user interacts with your
+agent (CLI, web app, API call, etc.)" alongside the agent loop, tools, AWS
+services and output. The diagram had every element except that one - it ran from
+published record to verification without ever showing a person. A **WHO SEES IT**
+band now carries the report page, the approval answered from a phone, and the
+scheduled run nobody asks for.

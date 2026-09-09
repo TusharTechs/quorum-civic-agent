@@ -100,13 +100,19 @@ and here is what happened to it.*
 
 Everything below is reproducible from the scripts in this repository.
 
-**Attention efficiency** on the 30 June packet:
+**Attention efficiency** on the 30 June packet. Figures depend on which provider
+serves the tiers, so both measured configurations are given:
 
 ```
-1,790 pages  →  51 agenda items  →  ~14 candidates  →  2–3 decisions      $0.02
+Bedrock    1,790 pages → 51 items → ~14 candidates → 2-3 decisions    $0.02
+Anthropic  1,790 pages → 51 items →  19 candidates →   5 decisions    $0.08
 ```
 
-**Retrieval quality**, 5 trials against a [hand-labelled key](eval/labels_2026-06-30.json):
+Haiku 4.5 is a more permissive triage model than Nova Lite, so more items survive
+and more alerts are written. Both are honest runs; neither is the "real" number.
+
+**Retrieval quality**, 5 trials against a [hand-labelled key](eval/labels_2026-06-30.json),
+measured on Bedrock:
 
 | | model triage alone | + deterministic rate floor |
 |---|---|---|
@@ -220,6 +226,18 @@ python scripts/build_report.py         # regenerate the report page
 
 Needs Bedrock access to `us.anthropic.claude-sonnet-4-5-*`,
 `us.anthropic.claude-haiku-4-5-*` and `us.amazon.nova-lite-v1:0` in `us-west-2`.
+
+**The provider is swappable.** The pipeline reasons in three tiers — triage,
+deep read, specialist — and does not care who serves them:
+
+```bash
+QUORUM_PROVIDER=bedrock    # default: Amazon Bedrock, AWS credentials
+QUORUM_PROVIDER=anthropic  # Anthropic API, needs ANTHROPIC_API_KEY
+QUORUM_PROVIDER=ollama     # local models, no key, no network
+```
+
+Model ids and per-tier pricing live in [`models.py`](src/quorum/models.py), so
+the cost printed after a run stays accurate whichever provider is in use.
 
 **Deploying to AgentCore**: `cd deploy && agentcore deploy --yes`, then
 `python scripts/teardown.py` to check nothing is left billing. Verified

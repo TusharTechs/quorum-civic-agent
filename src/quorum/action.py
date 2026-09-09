@@ -15,12 +15,9 @@ from dataclasses import dataclass, field
 
 from pydantic import BaseModel, Field
 from strands import Agent
-from strands.models import BedrockModel
 
+from .models import DEEP, get_model
 from .policy import ActionContext, Decision, evaluate
-
-REGION = "us-west-2"
-DRAFT_MODEL = "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
 
 # A quote counts as grounded if this much of it appears verbatim in the source.
 QUOTE_MIN_CHARS = 25
@@ -80,8 +77,12 @@ def _needs_citation(sentence: str) -> bool:
         return False                     # says nothing about the document
     if NORMATIVE.search(sentence):
         return False                     # an argument, not a factual claim
-    if FIRST_PERSON.match(sentence) and not PACKET_CLAIM.search(sentence):
-        return False                     # the resident's own circumstances
+    if FIRST_PERSON.match(sentence):
+        # The resident's own circumstances. Residents write "my situation is X,
+        # so the proposal does Y to me" - mentioning the proposal does not turn
+        # a statement about their own life into a claim about the document.
+        # A first-person sentence that quotes the packet is already caught above.
+        return False
     return True
 
 
@@ -110,14 +111,22 @@ def check_grounding(draft: CommentDraft, source_text: str) -> Grounding:
 def draft_comment(alert, item: dict, profile: dict, meeting_date: str) -> CommentDraft:
     """Write the comment. Citations are mandatory and are checked afterwards."""
     agent = Agent(
-        model=BedrockModel(model_id=DRAFT_MODEL, region_name=REGION),
+        model=get_model(DEEP),
         system_prompt=(
-            "You draft public comments a resident submits to their city council. "
-            "Rules, without exception: every factual assertion about the item must "
-            "end with a citation in the form (packet p.NNN). When you state what "
-            "the packet says, quote it verbatim in double quotes. Assert nothing "
-            "you were not given. Be brief, specific and civil. No AI disclaimers, "
-            "no filler, no invented statistics."
+            "You draft public comments a resident submits to their city "
+            "council.\n\n"
+            "Rules, without exception:\n"
+            "- Every factual assertion about the item ends with a citation in "
+            "the form (packet p.NNN).\n"
+            "- Anything inside double quotes must be copied character for "
+            "character from the text you were given. Do not tidy, shorten, join "
+            "or paraphrase inside quote marks. If you cannot copy a span "
+            "exactly, describe it in your own words with NO quote marks.\n"
+            "- Quote sparingly: one or two short exact spans are stronger than "
+            "four approximate ones.\n"
+            "- Assert nothing you were not given.\n"
+            "- Be brief, specific and civil. No AI disclaimers, no filler, no "
+            "invented statistics."
         ),
     )
     prompt = (

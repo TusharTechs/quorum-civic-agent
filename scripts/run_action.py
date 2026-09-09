@@ -7,10 +7,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from strands import Agent, tool                                  # noqa: E402
-from strands.models import BedrockModel                          # noqa: E402
 from strands.session import FileSessionManager                   # noqa: E402
 from strands.types.tools import ToolContext                      # noqa: E402
 
+from quorum import models                                        # noqa: E402
 from quorum.action import check_grounding, draft_comment, gate   # noqa: E402
 from quorum.household import load_profile                        # noqa: E402
 from quorum.stake import build_alerts                            # noqa: E402
@@ -61,8 +61,7 @@ def submit_public_comment(meeting: str, tool_context: ToolContext) -> str:
 
 def steward():
     return Agent(
-        model=BedrockModel(model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-                           region_name="us-west-2"),
+        model=models.get_model(models.SPECIALIST),
         tools=[submit_public_comment],
         system_prompt="Use submit_public_comment to file the prepared comment. "
                       "Report the policy decision exactly as returned.",
