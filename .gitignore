@@ -54,3 +54,6 @@ deploy/app/quorumAgent/quorum/
 scripts/scene.py
 scripts/build_cards.py
 assets/cards/
+
+# deploy transcript, regenerated each run
+deploy-run.log
