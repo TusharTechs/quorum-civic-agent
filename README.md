@@ -12,6 +12,7 @@
   <a href="https://quorum-civic-agent.vercel.app/"><b>Live demo</b></a> &nbsp;·&nbsp;
   <a href="#architecture"><b>Architecture</b></a> &nbsp;·&nbsp;
   <a href="#for-judges"><b>For judges</b></a> &nbsp;·&nbsp;
+  <a href="https://builder.aws.com/content/3IuxoiyuZjwvxnc3PXlQEKK9mbo/bounded-autonomy-for-irreversible-actions-strands-interrupts-agentcore-policy-agentsforhumans"><b>Write-up</b></a> &nbsp;·&nbsp;
   <a href="notes/engineering-log.md"><b>Engineering log</b></a>
 </p>
 
@@ -70,6 +71,7 @@ fixture.
 | **Live demo** | [quorum-civic-agent.vercel.app](https://quorum-civic-agent.vercel.app/) — a report page from a real run |
 | **Architecture** | [the Strands Graph](#architecture), colour-coded by what costs money |
 | **Deployment evidence** | [AgentCore runtime + memory, deployed, invoked, torn down](notes/deployment-evidence.md) |
+| **Write-up** | [Bounded autonomy for irreversible actions](https://builder.aws.com/content/3IuxoiyuZjwvxnc3PXlQEKK9mbo/bounded-autonomy-for-irreversible-actions-strands-interrupts-agentcore-policy-agentsforhumans) on AWS Builder Center |
 | **Engineering log** | [what broke and what it cost](notes/engineering-log.md) |
 
 **One command, no AWS account, no API key, nothing billed:**
