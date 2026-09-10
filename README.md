@@ -8,10 +8,17 @@
 </p>
 
 <p align="center">
+  <a href="https://youtu.be/-hHMbAoiTA4"><b>Demo video (4:57)</b></a> &nbsp;·&nbsp;
   <a href="https://quorum-civic-agent.vercel.app/"><b>Live demo</b></a> &nbsp;·&nbsp;
   <a href="#architecture"><b>Architecture</b></a> &nbsp;·&nbsp;
-  <a href="#verify-this-yourself-in-90-seconds"><b>Verify it yourself</b></a> &nbsp;·&nbsp;
+  <a href="#for-judges"><b>For judges</b></a> &nbsp;·&nbsp;
   <a href="notes/engineering-log.md"><b>Engineering log</b></a>
+</p>
+
+<p align="center">
+  <a href="https://youtu.be/-hHMbAoiTA4">
+    <img src="assets/cover-bounded-autonomy.png" alt="QUORUM demo video — 4 minutes 57 seconds" width="600">
+  </a>
 </p>
 
 <p align="center">
@@ -49,6 +56,56 @@ published documents. Here is that claim, checkable without running any code:
 
 Two public PDFs, two months apart, and a diff. No mock data, no API, nothing
 staged.
+
+---
+
+## For judges
+
+Everything below is checkable. Nothing is mocked, staged, or replayed from a
+fixture.
+
+| | |
+|---|---|
+| **Demo video** | [4:57 on YouTube](https://youtu.be/-hHMbAoiTA4) |
+| **Live demo** | [quorum-civic-agent.vercel.app](https://quorum-civic-agent.vercel.app/) — a report page from a real run |
+| **Architecture** | [the Strands Graph](#architecture), colour-coded by what costs money |
+| **Deployment evidence** | [AgentCore runtime + memory, deployed, invoked, torn down](notes/deployment-evidence.md) |
+| **Engineering log** | [what broke and what it cost](notes/engineering-log.md) |
+
+**One command, no AWS account, no API key, nothing billed:**
+
+```bash
+python scripts/verify.py
+```
+
+It reproduces twelve claims and prints PASS or FAIL for each:
+
+| Claim | Checked how |
+|---|---|
+| The packet is 1,790 pages, segmenting to 51 items | parsed live from berkeleyca.gov, no model |
+| The surveillance sentence is absent from the 7 May packet | full-text search of both PDFs |
+| It appears four times in the 30 June packet | pages 1395, 1402, 1413, 1415 |
+| Page 1394 demotes the committee's request | exact strings asserted in the source text |
+| One ordinance is renumbered between meetings | item 14, no number → item 1, Ordinance 8,003-N.S. |
+| Thirteen items tax this household $2,199.92/year | arithmetic in code, never by a model |
+| Naively summing "per square foot" gives $3,529.28 | overstating by $1,329.36 |
+| All 51 outcomes read back from the published record | Annotated Agenda, with page citations |
+| Reading the packet whole would cost ~$5.72 vs $0.02 routed | 7.6M characters counted from the parsed text |
+
+**What to look at, if you only have five minutes**
+
+1. [`lineage.py`](src/quorum/lineage.py) — identity resolution across meetings.
+   Renumbering is why a keyword alert misses this entirely, and why this is the
+   hard part rather than the search.
+2. [`action.py`](src/quorum/action.py) + [`quorum.cedar`](policy/quorum.cedar) —
+   the draft is complete, every quote verified, a human approves it, and a real
+   policy engine outside the model refuses to file it anyway.
+3. [`cost.py`](src/quorum/cost.py) — three rate bases across fifteen items, and
+   the excluded row that would otherwise overstate the bill by $1,329.36.
+
+**What this is not.** One jurisdiction, one household profile, one labeller.
+Triage recall varies between runs and the [limitations](#honest-limitations)
+section says so plainly rather than burying it.
 
 ---
 
@@ -110,6 +167,8 @@ Anthropic  1,790 pages → 51 items →  19 candidates →   5 decisions    $0.0
 
 Haiku 4.5 is a more permissive triage model than Nova Lite, so more items survive
 and more alerts are written. Both are honest runs; neither is the "real" number.
+The [live report page](https://quorum-civic-agent.vercel.app/) is one specific
+run — 16 candidates, 3 decisions — not an average of either row.
 
 **Retrieval quality**, 5 trials against a [hand-labelled key](eval/labels_2026-06-30.json),
 measured on Bedrock:
@@ -157,9 +216,10 @@ plain Python. They cost nothing and are auditable. Identity in particular is
 never decided by a model, because identity must be explainable.
 
 **Models only where reasoning is required**, routed by cost: Nova Lite over all
-51 items, Claude Sonnet 4.5 over the handful that survive. One pass of this
-packet through a frontier model would cost ~$3.80 in input alone; the routed
-pipeline costs $0.02.
+51 items, Claude Sonnet 4.5 over the handful that survive. The packet extracts to
+7.6M characters — roughly 1.9M tokens — so one pass through a frontier model
+costs about **$5.72 in input alone** at Sonnet 4.5 rates. The routed pipeline
+costs **$0.02**, and `scripts/verify.py` reproduces the character count.
 
 **The model never computes the number it reports.** When it was allowed to, it
 reported $0.89/sq ft against a true $1.11167 — confidently, and not obviously
@@ -210,17 +270,46 @@ OUTCOME    comment prepared, not filed
 
 ## Running it
 
-```bash
-python -m venv .venv
-.venv/Scripts/pip install -r requirements.txt
-aws configure                          # region us-west-2
+Python 3.10–3.12. Identical on macOS, Linux and Windows.
 
+```bash
+git clone https://github.com/TusharTechs/quorum-civic-agent
+cd quorum-civic-agent
+
+python -m venv .venv                   # macOS/Linux: python3 -m venv .venv
+source .venv/bin/activate              # Windows:     .venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+**No credentials needed.** One command reproduces twelve published claims and
+prints PASS or FAIL for each — it never calls a model, so nothing is billed:
+
+```bash
+python scripts/verify.py
+```
+
+First run downloads four public PDFs (~274 MB, 5–10 minutes); cached afterwards
+and re-runs in about ten seconds. The individual stages, if you prefer them one
+at a time:
+
+```bash
+python scripts/segment_packet.py                                # 1,790 pages → 51 items
+python scripts/ingest_many.py 2026-03-10 2026-03-24 2026-06-30  # the earlier meetings
+python scripts/build_lineages.py                                # cross-meeting identity
+python scripts/household_cost.py                                # the cost, with provenance
+python scripts/verify_outcomes.py                               # what the council did
+```
+
+`build_lineages.py` needs `ingest_many.py` to have run first, and
+`verify_outcomes.py` needs the Annotated Agenda — `verify.py` handles both.
+
+**With model credentials**, for the reasoning stages:
+
+```bash
+aws configure                          # region us-west-2
 python scripts/run_graph.py            # full pipeline on a real packet
-python scripts/build_lineages.py       # cross-meeting identity resolution
-python scripts/household_cost.py       # the cost breakdown, with provenance
-python scripts/run_action.py           # draft → interrupt → Cedar refusal
-python scripts/verify_outcomes.py      # what the council actually did
-python scripts/run_eval.py             # precision, recall, variance
+python scripts/run_action.py           # draft → grounding → interrupt → Cedar refusal
+python scripts/run_eval.py 5 --quiet   # precision, recall, variance
 python scripts/build_report.py         # regenerate the report page
 ```
 
